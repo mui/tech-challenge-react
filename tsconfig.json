@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["es6", "dom"],
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "baseUrl": "./",
+    "allowSyntheticDefaultImports": true,
+    "noErrorTruncation": false,
+    "allowJs": true,
+    "paths": {
+      "@material-ui/core": ["./packages/material-ui/src"],
+      "@material-ui/core/*": ["./packages/material-ui/src/*"],
+      "@material-ui/icons": ["./packages/material-ui-icons/src"],
+      "@material-ui/styled-engine": ["./packages/material-ui-styled-engine/src"],
+      "@material-ui/styled-engine/*": ["./packages/material-ui-styled-engine/src/*"],
+      "@material-ui/styled-engine-sc": ["./packages/material-ui-styled-engine-sc/src"],
+      "@material-ui/styled-engine-sc/*": ["./packages/material-ui-styled-engine-sc/src/*"],
+      "@material-ui/styles": ["./packages/material-ui-styles/src"],
+      "@material-ui/styles/*": ["./packages/material-ui-styles/src/*"],
+      "@material-ui/system": ["./packages/material-ui-system/src"],
+      "@material-ui/types": ["./packages/material-ui-types"],
+      "@material-ui/unstyled": ["./packages/material-ui-unstyled/src"],
+      "@material-ui/unstyled/*": ["./packages/material-ui-unstyled/src/*"],
+      "react": ["react/v16"],
+      "react-dom": ["react-dom/v16"],
+      "react-is": ["react-is/v16"],
+      "test/*": ["./test/*"],
+      "typescript-to-proptypes": ["./packages/typescript-to-proptypes/src"]
+    },
+    // Otherwise we get react-native typings which conflict with dom.lib.
+    "types": ["node", "react"]
+  },
+  "exclude": ["**/.*/", "**/build", "**/node_modules", "docs/export"]
+}

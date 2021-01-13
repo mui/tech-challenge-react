@@ -1,0 +1,26 @@
+# It is best to ignoring editor and system files in a local .gitignore configuration file.
+# However, in order to prevent issues, they are ignored here.
+.DS_STORE
+.idea
+.vscode
+*.log
+*.tsbuildinfo
+/.eslintcache
+/.nyc_output
+/benchmark/**/dist
+/coverage
+/docs/.env.local
+/docs/.next
+/docs/export
+/examples/**/.cache
+/packages/material-ui-codemod/lib
+/packages/material-ui-envinfo/*.tgz
+/packages/material-ui-icons/material-icons/*
+/test/regressions/build
+/test/regressions/screenshots
+/test/selenium-output
+/tmp
+build
+node_modules
+package-lock.json
+size-snapshot.json

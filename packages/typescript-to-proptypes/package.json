@@ -1,0 +1,50 @@
+{
+  "name": "typescript-to-proptypes",
+  "version": "5.0.0-alpha.22",
+  "private": true,
+  "description": "Generate proptypes from TypeScript declarations",
+  "engines": {
+    "node": ">=10.3.0"
+  },
+  "files": [
+    "build"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mui-org/material-ui.git",
+    "directory": "packages/typescript-to-proptypes"
+  },
+  "author": "merceyz <merceyz@users.noreply.github.com>",
+  "license": "MIT",
+  "keywords": [
+    "proptypes",
+    "typescript",
+    "react"
+  ],
+  "scripts": {
+    "test": "cd ../../ && cross-env NODE_ENV=test mocha --config packages/typescript-to-proptypes/.mocharc.js 'packages/typescript-to-proptypes/**/*.test.ts'",
+    "typescript": ""
+  },
+  "devDependencies": {
+    "@types/babel__core": "^7.1.2",
+    "@types/doctrine": "^0.0.3",
+    "@types/lodash": "^4.14.136",
+    "@types/node": "^14.0.26",
+    "@types/prettier": "^2.0.1",
+    "@types/react": "^17.0.0",
+    "@types/uuid": "^8.0.0",
+    "fast-glob": "^3.2.4",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {
+    "@babel/core": "^7.5.4",
+    "@babel/plugin-syntax-class-properties": "^7.2.0",
+    "@babel/plugin-syntax-jsx": "^7.2.0",
+    "@babel/types": "^7.5.0",
+    "doctrine": "^3.0.0",
+    "lodash": "^4.17.14",
+    "typescript": "3.5.2",
+    "uuid": "^8.1.0"
+  }
+}
