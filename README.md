@@ -26,7 +26,7 @@ A Combo Box is a component that combines a _text box_ with a _dropdown list_, al
 
 ### Objective
 
-The goal of this first phase is to implement the above component.
+The goal of this first phase is to implement the above component (with low-level primitives, e.g. without using Downshift).
 
 - [ ] Reproduce as much as the UX of the Chrome's URL bar as possible. You can allow benchmark with the UX of the Google's main search bar to adjust the tradeoffs. The end goal is to be able to use the component for the same search use case.
 - [ ] use React hooks, no class components
