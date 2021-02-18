@@ -64,7 +64,6 @@
     "core-js": "^2.6.11",
     "cross-env": "^7.0.0",
     "css-mediaquery": "^0.1.2",
-    "date-fns": "^2.0.0",
     "docsearch.js": "^2.6.3",
     "doctrine": "^3.0.0",
     "express": "^4.17.1",
@@ -96,7 +95,6 @@
     "react-virtualized": "^9.21.1",
     "react-window": "^1.8.5",
     "recast": "^0.20.2",
-    "recharts": "^1.6.2",
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
     "rimraf": "^3.0.0",
@@ -111,7 +109,6 @@
     "@babel/plugin-transform-react-constant-elements": "^7.8.3",
     "@babel/preset-typescript": "^7.7.4",
     "@types/marked": "^1.2.1",
-    "@types/recharts": "^1.8.14",
     "babel-plugin-unwrap-createstyles": "5.0.0-alpha.22",
     "cross-fetch": "^3.0.5",
     "gm": "^1.23.0"
