@@ -54,7 +54,7 @@ To save you time, a working environment was created with Next.js/TypeScript/esli
 
 - clone the repo: `git clone git@github.com:mui-org/react-technical-challenge.git`
 - install the dependencies: `yarn`
-- start Next.js: `yarn docs:dev`
+- start Next.js: `yarn start`
 - open http://0.0.0.0:3003/components/phase1/
 
 You can find the source of this URL at [`docs/pages/components/phase1.tsx`](https://github.com/mui-org/react-technical-challenge/blob/master/docs/pages/components/phase1.tsx), it already contains a data set of 248 countries.
