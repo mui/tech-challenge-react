@@ -1,7 +1,7 @@
 # ⚛️ Technical challenge @ Material-UI
 
 This challenge is part of the hiring process at Material-UI for the React Engineer position.
-It should take between 3 to 4 hours, depending on your experience to implement a minimal version.
+The idea is to make as much progress as possible under a given time constraint (3-4 hours).
 
 ## Context
 
