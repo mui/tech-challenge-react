@@ -82,8 +82,8 @@ Hi, I'm facing the following problem, please help.
 #### Steps to Reproduce 🕹
 
 1. Open https://codesandbox.io/s/inspiring-tharp-zc8nr
-2. Type `1` in the textbox. The component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
-3. Type `2` in the textbox. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
+2. Type <kbd>1</kbd> in the textbox. Once the options are loaded, the component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
+3. Type <kbd>2</kbd> in the textbox. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
 
 ### Objective
 
