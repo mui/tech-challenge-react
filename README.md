@@ -79,7 +79,7 @@ _Developers rarely spend the time to explain the pain point they face in detail 
 
 ---
 
-Hi, I'm facing the following problem, please help.
+Hi, I'm facing problem, please help.
 
 #### Steps to Reproduce 🕹
 
