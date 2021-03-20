@@ -77,6 +77,8 @@ This second phase is about handling a fake GitHub issue a developer has just ope
 
 _Developers rarely spend the time to explain the pain point they face in detail nor provide context. Lucky for us, we got a reproduction we can leverage:_
 
+---
+
 Hi, I'm facing the following problem, please help.
 
 #### Steps to Reproduce 🕹
@@ -85,9 +87,11 @@ Hi, I'm facing the following problem, please help.
 2. Type <kbd>1</kbd> in the textbox. Once the options are loaded, the component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
 3. Type <kbd>2</kbd> in the textbox. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
 
+---
+
 ### Objective
 
-The goal of this second phase is to solve the pain point of this developer based on the information provided.
+The goal of this second phase is to improve the component, and hopefully solve most of the pain point of this developer.
 
 - [ ] Commit your changes
 - [ ] Explain the tradeoff taken, compared to the alternatives
