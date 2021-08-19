@@ -107,5 +107,5 @@ Some guidances:
 ## Submission
 
 **DO NOT** host your project on public repositories.
-Send us a zip file containing this project (with the _.git_ but without the _node_modules_) at jobs@material-ui.com.
+Send us a zip file containing this project (with the _.git_ but without the _node_modules_) at job@mui.com.
 Alternatively, if you host it as a private repository on GitHub, you can invite [@oliviertassinari](https://github.com/oliviertassinari) to access it.
