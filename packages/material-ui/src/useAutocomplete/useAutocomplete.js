@@ -1006,7 +1006,7 @@ export default function useAutocomplete(props) {
       const disabled = getOptionDisabled ? getOptionDisabled(option) : false;
 
       return {
-        key: getOptionLabel(option),
+        key: index,
         tabIndex: -1,
         role: 'option',
         id: `${id}-option-${index}`,

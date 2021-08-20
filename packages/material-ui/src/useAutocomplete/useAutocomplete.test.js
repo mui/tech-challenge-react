@@ -1,52 +1,7 @@
-import * as React from 'react';
 import { expect } from 'chai';
-import { createClientRender, screen } from 'test/utils';
-import useAutocomplete, { createFilterOptions } from '@material-ui/core/useAutocomplete';
+import { createFilterOptions } from '@material-ui/core/useAutocomplete';
 
 describe('useAutocomplete', () => {
-  const render = createClientRender();
-
-  it('should preserve DOM nodes of options when re-ordering', () => {
-    const Test = (props) => {
-      const { options } = props;
-      const {
-        groupedOptions,
-        getRootProps,
-        getInputLabelProps,
-        getInputProps,
-        getListboxProps,
-        getOptionProps,
-      } = useAutocomplete({
-        options,
-        open: true,
-      });
-
-      return (
-        <div>
-          <div {...getRootProps()}>
-            <label {...getInputLabelProps()}>useAutocomplete</label>
-            <input {...getInputProps()} />
-          </div>
-          {groupedOptions.length > 0 ? (
-            <ul {...getListboxProps()}>
-              {groupedOptions.map((option, index) => {
-                return <li {...getOptionProps({ option, index })}>{option}</li>;
-              })}
-            </ul>
-          ) : null}
-        </div>
-      );
-    };
-
-    const { rerender } = render(<Test options={['foo', 'bar']} />);
-    const [fooOptionAsFirst, barOptionAsSecond] = screen.getAllByRole('option');
-    rerender(<Test options={['bar', 'foo']} />);
-    const [barOptionAsFirst, fooOptionAsSecond] = screen.getAllByRole('option');
-
-    // If the DOM nodes are not preserved VO will not read the first option again since it thinks it didn't change.
-    expect(fooOptionAsFirst).to.equal(fooOptionAsSecond);
-    expect(barOptionAsFirst).to.equal(barOptionAsSecond);
-  });
 
   describe('createFilterOptions', () => {
     it('defaults to getOptionLabel for text filtering', () => {
