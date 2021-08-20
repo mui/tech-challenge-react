@@ -83,7 +83,7 @@ Hi, I'm facing problem, please help.
 
 #### Steps to Reproduce 🕹
 
-1. Open https://codesandbox.io/s/inspiring-tharp-zc8nr
+1. Open https://codesandbox.io/s/recursing-mclean-2dub0?file=/demo.tsx
 2. Type <kbd>1</kbd> in the textbox. Once the options are loaded, the component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
 3. Type <kbd>2</kbd> in the textbox. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
 
