@@ -1,18 +1,18 @@
-# ⚛️ Technical challenge @ Material-UI
+# ⚛️ Technical challenge @ MUI
 
-This challenge is part of the hiring process at Material-UI for the React Engineer position.
+This challenge is part of the hiring process at MUI for the React Engineer position.
 The idea is to make as much progress as possible under a given time constraint (3-4 hours).
 
 ## Context
 
-In the short term, Material-UI is on a mission to become the UI toolkit for React. We are unifying the fragmented ecosystem of dependencies into a single set of simple, beautiful, consistent, and accessible React components.
+In the short term, MUI is on a mission to become the UI toolkit for React. We are unifying the fragmented ecosystem of dependencies into a single set of simple, beautiful, consistent, and accessible React components.
 
-In the long term, Material-UI is on a mission to make building great React UIs and web applications quicker, simpler, and accessible to more people through low-code solutions. We resonate with this vision: https://youtu.be/GnO7D5UaDig?t=2451.
+In the long term, MUI is on a mission to make building great React UIs and web applications quicker, simpler, and accessible to more people through low-code solutions. We resonate with this vision: https://youtu.be/GnO7D5UaDig?t=2451.
 
 Your challenge is split into two phases:
 
 - In the **[first phase](#first-phase)**, your objective is to build a simplified version of a Combo Box.
-- In the **[second phase](#second-phase)**, your objective is to handle a fake GitHub issue of the [same Combo Box component](https://material-ui.com/components/autocomplete/) that run in production.
+- In the **[second phase](#second-phase)**, your objective is to handle a fake GitHub issue of the [same Combo Box component](https://mui.com/components/autocomplete/) that run in production.
 
 ## First phase
 
@@ -38,7 +38,7 @@ The goal of this first phase is to implement the above component (with low-level
 - [ ] has no lintint errors (`yarn prettier && yarn lint && yarn typescript`)
 - [ ] has an ergonomic API
 
-In practice, such a solution would require dozens of hours to reach the high-quality bar we expect Material-UI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
+In practice, such a solution would require dozens of hours to reach the high-quality bar we expect MUI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
 
 - you may drop behaviors that have a too high time opportunity cost. Please **document the behaviors your drop and why**.
 - don't write documentation but enough to see how to use the component, e.g. one demo.
@@ -69,7 +69,7 @@ You can find the existing test to make pass at [`docs/pages/components/ComboBox.
 
 Congratulations, you have completed the first implementation of the component in the first phase. Now, it's time to push it to production!
 
-Fast forward a couple of months and hours of iteration on the component, you might reach a state close to [same Combo Box component](https://material-ui.com/components/autocomplete/) that we run in production.
+Fast forward a couple of months and hours of iteration on the component, you might reach a state close to [same Combo Box component](https://mui.com/components/autocomplete/) that we run in production.
 
 This second phase is about handling a fake GitHub issue a developer has just opened.
 
