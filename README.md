@@ -107,5 +107,5 @@ Some guidances:
 ## Submission
 
 **DO NOT** host your project on public repositories.
-Send us a zip file containing this project (with the _.git_ but without the _node_modules_) at job@mui.com.
-Alternatively, if you host it as a private repository on GitHub, you can invite [@oliviertassinari](https://github.com/oliviertassinari) to access it.
+The preferred is to send us a zip file containing this project (with the _.git_ but without the _node_modules_) at job@mui.com.
+If not possible, and you host the project as a private repository on GitHub, you can invite [@mui-job](https://github.com/mui-job) to access it.
