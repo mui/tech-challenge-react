@@ -6,7 +6,7 @@ The idea is to make as much progress as possible under a given time constraint (
 ## Why are we doing this?
 
 At MUI, because we are a DevTools company, you'll make product decisions. You will flesh out product requirements and turn them into a technical design and implementation.
-This challenge simulates that. 
+This challenge simulates that, it ranges from taking frontend product decisions down to diving into a complex codebase to implement a specific outcome.
 We want to get a glimpse of how you will perform in the role.
 
 ## Context about MUI
