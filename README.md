@@ -37,7 +37,7 @@ The goal of this first phase is to implement the above component (with low-level
 - [ ] make the existing test pass, add tests for edge cases
 - [ ] has no lintint errors (`yarn prettier && yarn lint && yarn typescript`)
 - [ ] has an ergonomic API
-- [ ] not using `<datalist>`
+- [ ] not using `<datalist>` or any pre-made React component
 
 In practice, such a solution would require dozens of hours to reach the high-quality bar we expect MUI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
 
