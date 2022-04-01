@@ -12,7 +12,7 @@ In the long term, MUI is on a mission to make building great React UIs and web a
 Your challenge is split into two phases:
 
 - In the **[first phase](#first-phase)**, your objective is to build a simplified version of a Combo Box.
-- In the **[second phase](#second-phase)**, your objective is to handle a fake GitHub issue of the [same Combo Box component](https://mui.com/components/autocomplete/) that run in production.
+- In the **[second phase](#second-phase)**, your objective is to handle a fake GitHub issue of the [same Combo Box component](https://mui.com/components/autocomplete/) that runs in production.
 
 ## First phase
 
@@ -20,7 +20,7 @@ Your challenge is split into two phases:
 
 ### Introduction
 
-A Combo Box is a component that combines a _text box_ with a _dropdown list_, allowing the users to choose among a list of a long list of mutually exclusive values. For instance, the Chrome's URL bar:
+A Combo Box is a component that combines a _text box_ with a _dropdown list_, allowing the users to choose among a list of a long list of mutually exclusive values. For instance, Chrome's URL bar:
 
 <img src="/combo-box.png" width="100%" />
 
@@ -28,7 +28,7 @@ A Combo Box is a component that combines a _text box_ with a _dropdown list_, al
 
 The goal of this first phase is to implement the above component (with low-level primitives, e.g. without using Downshift).
 
-- [ ] Reproduce as much as the UX of the Chrome's URL bar as possible. You can also benchmark with the UX of the Google's main search bar to adjust the tradeoffs. The end goal is to be able to use the component for the same search use case.
+- [ ] Reproduce as much of the UX of Chrome's URL bar as possible. You can also benchmark with the UX of Google's main search bar to adjust the tradeoffs. The end goal is to be able to use the component for the same search use case.
 - [ ] use React hooks, no class components
 - [ ] be written in TypeScript, `any` and `@ts-ignore` are accepted but need to be justified (comments)
 - [ ] be performant, it can render 300 options without virtualization
@@ -37,6 +37,7 @@ The goal of this first phase is to implement the above component (with low-level
 - [ ] make the existing test pass, add tests for edge cases
 - [ ] has no lintint errors (`yarn prettier && yarn lint && yarn typescript`)
 - [ ] has an ergonomic API
+- [ ] not using `<datalist>` or any pre-made React component
 
 In practice, such a solution would require dozens of hours to reach the high-quality bar we expect MUI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
 
@@ -48,18 +49,21 @@ In practice, such a solution would require dozens of hours to reach the high-qua
 - no right-to-left support
 - no npm publish
 
-## Environment
+## Work environment
 
-To save you time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc. It's a reproduction of the [mui-org/material-ui](https://github.com/mui-org/material-ui) repository. You can install this environment following these steps:
+To save you time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc.
+It's a reproduction of the [mui/material-ui](https://github.com/mui/material-ui) repository.
+You can install this environment following these steps:
 
-- clone the repo: `git clone git@github.com:mui-org/react-technical-challenge.git`
+- clone the repo: `git clone git@github.com:mui/react-technical-challenge.git`
 - install the dependencies: `yarn`
 - start Next.js: `yarn start`
 - open http://0.0.0.0:3003/components/phase1/
 
-You can find the source of this URL at [`docs/pages/components/phase1.tsx`](https://github.com/mui-org/react-technical-challenge/blob/master/docs/pages/components/phase1.tsx), it already contains a data set of 248 countries.
+You can find the source of this URL at [`docs/pages/components/phase1.tsx`](https://github.com/mui/react-technical-challenge/blob/master/docs/pages/components/phase1.tsx), it already contains a data set of 248 countries.
 
-You can find the existing test to make pass at [`docs/pages/components/ComboBox.test.js`](https://github.com/mui-org/react-technical-challenge/blob/master/docs/pages/components/ComboBox.test.js). The tests in the file can be run with this command: `yarn t ComboBox`.
+You can find the existing test to make pass at [`docs/pages/components/ComboBox.test.js`](https://github.com/mui/react-technical-challenge/blob/master/docs/pages/components/ComboBox.test.js).
+The tests in the file can be run with this command: `yarn t ComboBox`.
 
 ## Second phase
 
@@ -81,31 +85,37 @@ _Developers rarely spend the time to explain the pain point they face in detail 
 
 Hi, I'm facing problem, please help.
 
-#### Steps to Reproduce 🕹
+#### Steps to reproduce 🕹
 
 1. Open https://codesandbox.io/s/recursing-mclean-2dub0?file=/demo.tsx
 2. Type <kbd>1</kbd> in the textbox. Once the options are loaded, the component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
-3. Type <kbd>2</kbd> in the textbox. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
+3. Then type <kbd>2</kbd> in the textbox. The textbox now contains `12`. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
+
+#### Environment
+
+`@material-ui/core@5.0.0-alpha.15`
 
 ---
 
 ### Objective
 
-The goal of this second phase is to improve the component, and hopefully solve most of the pain point of this developer.
+The goal of this second phase is to improve the component from v5.0.0-alpha.15 and hopefully solve most of the pain points of this developer.
 
 - [ ] Commit your changes
 - [ ] Explain the tradeoff taken, compared to the alternatives
 
-Some guidances:
+### Guidance
+
+The repository you have cloned in the beginning includes a simplified version of https://github.com/mui/material-ui on v5.0.0-alpha.15.
 
 - The documentation of the Autocomplete component can be found at http://0.0.0.0:3003/components/autocomplete/. It's updating live with changes in the source.
-- The tests of the Autocomplete component can be found at [`packages/material-ui/src/Autocomplete/Autocomplete.test.js`](https://github.com/mui-org/react-technical-challenge/blob/master/packages/material-ui/src/Autocomplete/Autocomplete.test.js)
+- The tests of the Autocomplete component can be found at [`packages/material-ui/src/Autocomplete/Autocomplete.test.js`](https://github.com/mui/react-technical-challenge/blob/master/packages/material-ui/src/Autocomplete/Autocomplete.test.js)
 - The tests of the Autocomplete component can be run with `yarn t Autocomplete`.
 - We expect bug fixes to come with a new test.
 - Fixing this bug might require breaking other tests, you should evaluate if the tradeoff is acceptable.
 
 ## Submission
 
-**DO NOT** host your project on public repositories.
+**DO NOT** host your project on a public repository.
 Send us a zip file containing this project (with the _.git_ but without the _node_modules_) at job@mui.com.
 Thanks!
