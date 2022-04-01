@@ -28,7 +28,7 @@ A Combo Box is a component that combines a _text box_ with a _dropdown list_, al
 
 The goal of this first phase is to implement the above component:
 
-- [ ] no high-level primitives, e.g. without `<datalist>`, without pre-made React components
+- [ ] no high-level primitives, e.g. without [`<datalist>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist), without pre-made React components
 - [ ] reproduce as much of the UX of Chrome's URL bar as possible. You can also benchmark with the UX of Google's main search bar to adjust the tradeoffs. The end goal is to be able to use the component for the same search use case.
 - [ ] use React hooks, no class components
 - [ ] be written in TypeScript, `any` and `@ts-ignore` are accepted but need to be justified (comments)
