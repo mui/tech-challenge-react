@@ -13,7 +13,7 @@ We want to get a glimpse of how you will perform in the role.
 
 In the short term, MUI is on a mission to become the UI toolkit for React. We are unifying the fragmented ecosystem of dependencies into a single set of simple, beautiful, consistent, and accessible React components.
 
-In the long term, MUI is on a mission to make building great React UIs and web applications quicker, simpler, and accessible to more people through a low-code platform. It's about writing fewer code: https://youtu.be/GnO7D5UaDig?t=2451.
+In the long term, MUI is on a mission to make building great React UIs and web applications quicker, simpler, and accessible to more people through a low-code platform. It's about writing less code, e.g. https://youtu.be/GnO7D5UaDig?t=2451.
 
 Head to [our Handbook](https://mui-org.notion.site/Why-MUI-d8b8c142a6a44e3aa963f26edf4e03db) to learn more.
 
