@@ -1,13 +1,23 @@
 # ⚛️ Technical challenge @ MUI
 
-This challenge is part of the hiring process at MUI for the React Engineer position.
+This challenge is part of the hiring process at MUI for some of the Software Engineer positions.
 The idea is to make as much progress as possible under a given time constraint (3-4 hours).
 
-## Context
+## Why are we doing this?
+
+At MUI, because we are a DevTools company, you'll make product decisions. You will flesh out product requirements and turn them into a technical design and implementation.
+This challenge simulates that, we will review the product decisions you make, the quality of the code, as well as how you approach diving into a complex codebase.
+We want to get a glimpse of how you will perform in the role.
+
+## Context about MUI
 
 In the short term, MUI is on a mission to become the UI toolkit for React. We are unifying the fragmented ecosystem of dependencies into a single set of simple, beautiful, consistent, and accessible React components.
 
-In the long term, MUI is on a mission to make building great React UIs and web applications quicker, simpler, and accessible to more people through low-code solutions. We resonate with this vision: https://youtu.be/GnO7D5UaDig?t=2451.
+In the long term, MUI is on a mission to make building great React UIs and web applications quicker, simpler, and accessible to more people through a low-code platform. It's about writing less code, e.g. https://youtu.be/GnO7D5UaDig?t=2451.
+
+Head to [our Handbook](https://mui-org.notion.site/Why-MUI-d8b8c142a6a44e3aa963f26edf4e03db) to learn more.
+
+## Summary
 
 Your challenge is split into two phases:
 
