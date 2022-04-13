@@ -113,7 +113,7 @@ Hi, I'm facing problem, please help.
 
 The goal of this second phase is to improve the component from v5.0.0-alpha.15 and hopefully solve most of the pain points of this developer.
 
-- [ ] Commit your changes
+- [ ] Commit your changes in your fork
 - [ ] Explain the tradeoff taken, compared to the alternatives
 
 ### Guidance
