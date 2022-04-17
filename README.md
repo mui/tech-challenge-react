@@ -123,7 +123,7 @@ The repository you have cloned in the beginning includes a simplified version of
 - The documentation of the Autocomplete component can be found at http://0.0.0.0:3003/components/autocomplete/. It's updating live with changes in the source.
 - The tests of the Autocomplete component can be found at [`packages/material-ui/src/Autocomplete/Autocomplete.test.js`](https://github.com/mui/react-technical-challenge/blob/master/packages/material-ui/src/Autocomplete/Autocomplete.test.js)
 - The tests of the Autocomplete component can be run with `yarn t Autocomplete`.
-- We expect bug fixes to come with a new test.
+- We expect the bug fix to come with a new test that will prevent regressions.
 - Fixing this bug might require breaking other tests, you should evaluate if the tradeoff is acceptable.
 
 ## Submission
