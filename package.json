@@ -125,6 +125,7 @@
     "fs-extra": "^9.0.0",
     "globby": "^11.0.1",
     "html-webpack-plugin": "^4.5.0",
+    "ignore-styles": "^5.0.1",
     "jsdom": "^16.0.0",
     "karma": "^5.0.1",
     "karma-browserstack-launcher": "~1.4.0",
@@ -212,7 +213,5 @@
     "docs/packages/*",
     "framer"
   ],
-  "dependencies": {
-    "ignore-styles": "^5.0.1"
-  }
+  "dependencies": {}
 }
