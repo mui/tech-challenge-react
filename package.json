@@ -212,6 +212,5 @@
     "docs",
     "docs/packages/*",
     "framer"
-  ],
-  "dependencies": {}
+  ]
 }
