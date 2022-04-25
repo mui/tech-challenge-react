@@ -211,5 +211,8 @@
     "docs",
     "docs/packages/*",
     "framer"
-  ]
+  ],
+  "dependencies": {
+    "ignore-styles": "^5.0.1"
+  }
 }
