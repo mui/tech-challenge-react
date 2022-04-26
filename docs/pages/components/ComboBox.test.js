@@ -2,7 +2,7 @@ import * as React from 'react';
 import { expect } from 'chai';
 import { createClientRender, fireEvent, screen } from 'test/utils';
 import { spy } from 'sinon';
-import ComboBox from './ComboBox.tsx';
+import ComboBox from './ComboBox';
 
 /**
  * You can run these tests with `yarn t ComboBox`.

@@ -32,7 +32,7 @@ Your challenge is split into two phases:
 
 ### Introduction
 
-A Combo Box is a component that combines a _text box_ with a _dropdown list_, allowing the users to choose among a list of a long list of mutually exclusive values. For instance, Chrome's URL bar:
+A Combo Box is a component that combines a _text box_ with a _dropdown list_, allowing the users to choose among a long list of mutually exclusive values. For instance, Chrome's URL bar:
 
 <img src="/combo-box.png" width="100%" />
 
@@ -48,7 +48,7 @@ The goal of this first phase is to implement the above component:
 - [ ] be accessible, end-users could only use the keyboard, see [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#combobox) for guidance. Their [examples](https://www.w3.org/TR/wai-aria-practices/examples/combobox/combobox-autocomplete-both.html) might be the most helpful.
 - [ ] looks great, has a beautiful UI
 - [ ] make the existing test pass, add tests for edge cases
-- [ ] has no lintint errors (`yarn prettier && yarn lint && yarn typescript`)
+- [ ] has no linting errors (`yarn prettier && yarn lint && yarn typescript`)
 - [ ] has an ergonomic API
 
 In practice, such a solution would require dozens of hours to reach the high-quality bar we expect MUI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
