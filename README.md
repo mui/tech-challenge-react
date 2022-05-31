@@ -24,7 +24,7 @@ Head to [our Handbook](https://mui-org.notion.site/Why-MUI-d8b8c142a6a44e3aa963f
 Your challenge is split into two phases:
 
 - In the **[first phase](#first-phase)**, your objective is to build a simplified version of a Combo Box.
-- In the **[second phase](#second-phase)**, your objective is to handle a fake GitHub issue of the [same Combo Box component](https://mui.com/components/autocomplete/) that runs in production.
+- In the **[second phase](#second-phase)**, your objective is to handle a fake GitHub issue of the [same Combo Box component](https://v4.mui.com/components/autocomplete/) that runs in production.
 
 ## First phase
 
