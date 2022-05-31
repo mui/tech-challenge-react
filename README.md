@@ -85,7 +85,7 @@ The tests in the file can be run with this command: `yarn t ComboBox`.
 
 Congratulations, you have completed the first implementation of the component in the first phase. Now, it's time to push it to production!
 
-Fast forward a couple of months and hours of iteration on the component, you might reach a state close to [same Combo Box component](https://mui.com/components/autocomplete/) that we run in production.
+Fast forward a couple of months and hours of iteration on the component, you might reach a state close to [same Combo Box component](https://v4.mui.com/components/autocomplete/) that we run in production.
 
 This second phase is about handling a fake GitHub issue a developer has just opened.
 
