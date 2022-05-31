@@ -45,7 +45,7 @@ The goal of this first phase is to implement the above component:
 - [ ] use React hooks, no class components
 - [ ] be written in TypeScript, `any` and `@ts-ignore` are accepted but need to be justified (comments)
 - [ ] be performant, it can render 300 options without virtualization
-- [ ] be accessible, end-users could only use the keyboard, see [WAI-ARIA](https://www.w3.org/TR/wai-aria-practices/#combobox) for guidance. Their [examples](https://www.w3.org/TR/wai-aria-practices/examples/combobox/combobox-autocomplete-both.html) might be the most helpful.
+- [ ] be accessible, end-users could only use the keyboard, see [WAI-ARIA](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) for guidance. Their [examples](https://www.w3.org/WAI/ARIA/apg/example-index/combobox/combobox-autocomplete-both.html) might be the most helpful.
 - [ ] looks great, has a beautiful UI
 - [ ] make the existing test pass, add tests for edge cases
 - [ ] has no linting errors (`yarn prettier && yarn lint && yarn typescript`)
