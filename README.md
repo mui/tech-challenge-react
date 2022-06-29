@@ -63,7 +63,7 @@ In practice, such a solution would require dozens of hours to reach the high-qua
 
 ## Work environment
 
-To save you time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc.
+To save your time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc.
 It's a reproduction of the [mui/material-ui](https://github.com/mui/material-ui) repository.
 You can install this environment following these steps:
 
