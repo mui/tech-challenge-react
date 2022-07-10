@@ -129,5 +129,5 @@ The repository you have cloned in the beginning includes a simplified version of
 ## Submission
 
 **DO NOT** host your project on a public repository.
-Send us a zip file containing this project (with the _.git_ but without the _node_modules_) at job@mui.com.
+Send us a zip file containing this project (with the _.git_ but without the _node_modules_ folders) at job@mui.com.
 Thanks!
