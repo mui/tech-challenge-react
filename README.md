@@ -61,7 +61,7 @@ In practice, such a solution would require dozens of hours to reach the high-qua
 - no right-to-left support
 - no npm publish
 
-## Work environment
+### Work environment
 
 To save your time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc.
 It's a reproduction of the [mui/material-ui](https://github.com/mui/material-ui) repository.
@@ -69,6 +69,7 @@ You can install this environment following these steps:
 
 - clone the repo: `git clone git@github.com:mui/react-technical-challenge.git`
 - install the dependencies: `yarn`
+- use a Node.js's version <= 16 and >= 10
 - start Next.js: `yarn start`
 - open http://0.0.0.0:3003/components/phase1/
 
@@ -85,7 +86,7 @@ The tests in the file can be run with this command: `yarn t ComboBox`.
 
 Congratulations, you have completed the first implementation of the component in the first phase. Now, it's time to push it to production!
 
-Fast forward a couple of months and hours of iteration on the component, you might reach a state close to [same Combo Box component](https://v4.mui.com/components/autocomplete/) that we run in production.
+Fast forward months and hours of iteration on the component, you might reach a state close to same [Combo Box](http://0.0.0.0:3003/components/autocomplete/) component that we were running in production around January 2021.
 
 This second phase is about handling a fake GitHub issue a developer has just opened.
 
@@ -109,13 +110,6 @@ Hi, I'm facing problem, please help.
 
 ---
 
-### Objective
-
-The goal of this second phase is to improve the component from v5.0.0-alpha.15 and hopefully solve most of the pain points of this developer.
-
-- [ ] Commit your changes in your fork
-- [ ] Explain the tradeoff taken, compared to the alternatives
-
 ### Guidance
 
 The repository you have cloned in the beginning includes a simplified version of https://github.com/mui/material-ui on v5.0.0-alpha.15.
@@ -125,6 +119,13 @@ The repository you have cloned in the beginning includes a simplified version of
 - The tests of the Autocomplete component can be run with `yarn t Autocomplete`.
 - We expect the bug fix to come with a new test that will prevent regressions.
 - Fixing this bug might require breaking other tests, you should evaluate if the tradeoff is acceptable.
+
+### Objective
+
+The goal of this second phase is to improve the component from v5.0.0-alpha.15 and hopefully solve most of the pain points of this developer.
+
+- [ ] Commit your changes in your fork
+- [ ] Explain the tradeoff taken, compared to the alternatives
 
 ## Submission
 
