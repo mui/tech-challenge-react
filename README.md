@@ -71,7 +71,7 @@ You can install this environment following these steps:
 - install the dependencies: `yarn`
 - use a Node.js's version <= 16 and >= 10
 - start Next.js: `yarn start`
-- open http://0.0.0.0:3003/components/phase1/
+- open http://0.0.0.0:3002/components/phase1/
 
 You can find the source of this URL at [`docs/pages/components/phase1.tsx`](https://github.com/mui/react-technical-challenge/blob/master/docs/pages/components/phase1.tsx), it already contains a data set of 248 countries.
 
@@ -86,7 +86,7 @@ The tests in the file can be run with this command: `yarn t ComboBox`.
 
 Congratulations, you have completed the first implementation of the component in the first phase. Now, it's time to push it to production!
 
-Fast forward months and hours of iteration on the component, you might reach a state close to same [Combo Box](http://0.0.0.0:3003/components/autocomplete/) component that we were running in production around January 2021.
+Fast forward months and hours of iteration on the component, you might reach a state close to same [Combo Box](http://0.0.0.0:3002/components/autocomplete/) component that we were running in production around January 2021.
 
 This second phase is about handling a fake GitHub issue a developer has just opened.
 
@@ -114,7 +114,7 @@ Hi, I'm facing problem, please help.
 
 The repository you have cloned in the beginning includes a simplified version of https://github.com/mui/material-ui on v5.0.0-alpha.15.
 
-- The documentation of the Autocomplete component can be found at http://0.0.0.0:3003/components/autocomplete/. It's updating live with changes in the source.
+- The documentation of the Autocomplete component can be found at http://0.0.0.0:3002/components/autocomplete/. It's updating live with changes in the source.
 - The tests of the Autocomplete component can be found at [`packages/material-ui/src/Autocomplete/Autocomplete.test.js`](https://github.com/mui/react-technical-challenge/blob/master/packages/material-ui/src/Autocomplete/Autocomplete.test.js)
 - The tests of the Autocomplete component can be run with `yarn t Autocomplete`.
 - We expect the bug fix to come with a new test that will prevent regressions.
