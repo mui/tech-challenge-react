@@ -8,7 +8,7 @@ import ComboBox from './ComboBox';
 
 /**
  * You can render this page with:
- * yarn docs:dev && open http://0.0.0.0:3003/components/phase1/
+ * yarn docs:dev && open http://0.0.0.0:3002/components/phase1/
  */
 export default function LandingPage() {
   return (
