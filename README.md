@@ -130,5 +130,5 @@ The goal of this second phase is to improve the component from v5.0.0-alpha.15 a
 ## Submission
 
 **DO NOT** host your project on a public repository.
-Please send us a zip file containing this project (with the _.git_ but without the _node_modules_ folders) using the upload link that we have provided by email (or send it at job@mui.com).
+Please send us a zip file containing this project, with the _.git_ but without the _node_modules_ folders; using the upload link that we have provided by email. If you don't have the upload link, you can simply send it at job@mui.com.
 Thanks!
