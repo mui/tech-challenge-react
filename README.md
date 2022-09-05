@@ -130,6 +130,7 @@ The goal of this second phase is to improve the component from v5.0.0-alpha.15 a
 ## Submission
 
 **DO NOT** host your project on a public repository.
-Please send us a zip file containing this project, with the _.git_ but without the _node_modules_ folders, using the upload link that we have provided by email.
+Please send us a zip file containing this project using the upload link that we have provided by email (**with** the _.git_ folder).
+To significantly reduce the size of the archive, you can remove the `/_node_modules_/` and `/docs/.next/` folders.
 If you don't have the upload link, you can simply send it to job@mui.com.
 Thanks!
