@@ -48,7 +48,7 @@ The goal of this first phase is to implement the above component:
 - [ ] be accessible, end-users could only use the keyboard, see [WAI-ARIA](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) for guidance. Their [examples](https://www.w3.org/WAI/ARIA/apg/example-index/combobox/combobox-autocomplete-both.html) might be the most helpful.
 - [ ] looks great, has a beautiful UI
 - [ ] make the existing test pass, add tests for edge cases
-- [ ] has no linting errors (`yarn prettier && yarn lint && yarn typescript`)
+- [ ] has no linting errors (`yarn prettier && yarn eslint && yarn typescript`)
 - [ ] has an ergonomic API
 
 In practice, such a solution would require dozens of hours to reach the high-quality bar we expect MUI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
