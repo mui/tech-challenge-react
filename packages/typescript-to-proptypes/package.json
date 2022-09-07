@@ -26,25 +26,8 @@
     "typescript": ""
   },
   "devDependencies": {
-    "@types/babel__core": "^7.1.2",
-    "@types/doctrine": "^0.0.3",
-    "@types/lodash": "^4.14.136",
-    "@types/node": "^14.0.26",
-    "@types/prettier": "^2.0.1",
-    "@types/react": "^17.0.0",
-    "@types/uuid": "^8.0.0",
-    "fast-glob": "^3.2.4",
-    "prettier": "^2.0.5",
-    "rimraf": "^3.0.2"
+    "@types/doctrine": "^0.0.3"
   },
   "dependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/plugin-syntax-class-properties": "^7.2.0",
-    "@babel/plugin-syntax-jsx": "^7.2.0",
-    "@babel/types": "^7.5.0",
-    "doctrine": "^3.0.0",
-    "lodash": "^4.17.14",
-    "typescript": "3.5.2",
-    "uuid": "^8.1.0"
   }
 }
