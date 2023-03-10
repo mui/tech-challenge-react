@@ -1,60 +1,93 @@
-# Material-UI Scripts
+# MUI Scripts
 
 ## Release
 
 A typical release goes like this:
 
-1. **Changelog**. Generate the changelog:
+### Prerequisites
 
-- Compare the last version with `next`. For instance: https://github.com/mui-org/material-ui/compare/v5.0.0-alpha.17...next
-- Generate the changelog with this script: https://trello.com/c/uspnIWkh/1566-release-note
-- Clean the generated changelog, to match the format of https://github.com/mui-org/material-ui/releases.
-- Open a pull request with the generated change on `next`.
+1. You must be a member of the `@mui` org in npm to publish the release
+2. Set up your npm authToken by logging into npm (`npm login`) . This will save a token to `~/.npmrc` as a line that looks
+   like this:
+   ```text
+   //registry.npmjs.org/:_authToken=npm_000000000000000000000000000000000000
+   ```
+3. Make sure you have added the `material-ui-docs` remote to deploy the documentation:
+   ```sh
+   git remote add material-ui-docs https://github.com/mui/material-ui-docs.git
+   ```
 
-1. **Build**. Prepare the release:
+### Prepare
 
-```
-git checkout next
-git pull
-git checkout -b v5.0.0-alpha.18
-yarn
-yarn release:version
-yarn release:build
-```
+The following steps must be proposed as a pull request.
 
-1. **Version**. Update the root `/package.json`'s version and commit all the changes
+1. Generate the changelog with `yarn release:changelog`
+   The output must be prepended to the top level `CHANGELOG.md`
+   `yarn release:changelog --help` for more information.
 
-```
-git commit -am "v5.0.0-alpha.18"
-git tag v5.0.0-alpha.18
-```
+2. Clean the generated changelog, to match the format of https://github.com/mui/material-ui/releases.
+3. Update the root `/package.json`'s version
+4. `yarn release:version` (🔔 manually remove `^` from packages with prerelease version, eg. `-alpha`)
+5. Open PR with changes and wait for review and green CI
+6. Merge PR once CI is green and it has been approved
 
-1. **npm**. Release the packages to npm. You need your 2FA device:
+### Release
 
-```
-yarn release:publish
-```
+1. Checkout merge commit of the merged PR
+2. `yarn`
+3. `yarn release:build`
+4. `yarn release:publish`
+   You need your 2FA device.
+5. `yarn release:tag`
 
-1. **git**. Push the release git commit and git tag to master (e.g. "v5.0.0-alpha.17"):
+### Documentation
 
-```
-git push
-git push --tag
-```
+`yarn docs:deploy` to deploy the documentation (it lives at https://material-ui.netlify.app/) with the latest changes.
+Force push if necessary.
 
-1. **Docs**. Push the next branch on the release branch to deploy the documentation with the latest changes. It lives at https://material-ui.netlify.app/. Force push if necessary.
+### Announce
 
-Note: if you don't have the `material-ui-docs` remote already, you should add it with
+Follow the instructions in https://mui-org.notion.site/Releases-7490ef9581b4447ebdbf86b13164272d.
 
-```
-git remote add material-ui-docs https://github.com/mui-org/material-ui-docs.git
-```
+## Deploy documentation without a release
 
-```
-yarn docs:deploy
-```
+Sometimes it is necessary to deploy the selected commit(s) without
+deploying all the changes that have been merged into the main branch
+since the previous release (e.g. publishing a blog post or releasing
+urgent docs updates).
 
-1. **GitHub**. Make a new release on GitHub (for people subscribing to updates). https://github.com/mui-org/material-ui/releases
-1. **Twitter**. It's even better to synchronize with the release of Material-UI X: https://trello.com/c/kYF9OLLi/105-release-steps, to have a single announcement/version covering the two.
-   Send a tweet with the main Twitter account to summarize what happened.
-   Example of template https://twitter.com/MaterialUI/status/1341422029862526977
+To do so, follow these steps:
+
+1. Add the `material-ui-docs` remote if you haven't done this already:
+
+   ```sh
+   git remote add material-ui-docs https://github.com/mui/material-ui-docs.git
+   ```
+
+2. Switch to the `latest` branch from `material-ui-docs` remote:
+
+   ```sh
+   git switch --detach material-ui-docs/latest
+   ```
+
+3. Cherry-pick the commit(s) that you want to include in the new deployment:
+
+   ```sh
+   git cherry-pick <commit>
+   ```
+
+   It will commit the changes if there are no conflicts.
+
+   In case of conflicts you will need to resolve them and commit the changes manually.
+
+4. Push the changes to the `material-ui-docs` remote:
+
+   ```sh
+   git push material-ui-docs HEAD:latest
+   ```
+
+5. Switch from detached `HEAD` back to your last checked out branch:
+
+   ```sh
+   git checkout -
+   ```

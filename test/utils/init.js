@@ -1,5 +1,5 @@
 import enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@mnajdova/enzyme-adapter-react-18';
 import * as testingLibrary from '@testing-library/react/pure';
 import './initMatchers';
 

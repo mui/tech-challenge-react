@@ -1,7 +1,7 @@
 import * as React from 'react';
-import BrandingRoot from 'docs/src/modules/branding/BrandingRoot';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
+import BrandingCssVarsProvider from 'docs/src/BrandingCssVarsProvider';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 // You can use this dataset for the component
 import countries from './countries';
 import ComboBox from './ComboBox';
@@ -12,16 +12,16 @@ import ComboBox from './ComboBox';
  */
 export default function LandingPage() {
   return (
-    <BrandingRoot>
+    <BrandingCssVarsProvider>
       <Container>
         <Typography component="h1" variant="h2" sx={{ mt: 8 }}>
           First phase
         </Typography>
         <ComboBox />
-        <Typography variant="body3">
+        <Typography variant="body2">
           <pre>{JSON.stringify(countries, null, 2)}</pre>
         </Typography>
       </Container>
-    </BrandingRoot>
+    </BrandingCssVarsProvider>
   );
 }

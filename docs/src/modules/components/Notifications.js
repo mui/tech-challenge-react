@@ -1,57 +1,65 @@
-/* eslint-disable react/no-danger, react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import Tooltip from '@material-ui/core/Tooltip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import Typography from '@material-ui/core/Typography';
-import Popper from '@material-ui/core/Popper';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Divider from '@material-ui/core/Divider';
+import { styled } from '@mui/material/styles';
+import NotificationsNoneRoundedIcon from '@mui/icons-material/NotificationsNoneRounded';
+import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import Typography from '@mui/material/Typography';
+import Popper from '@mui/material/Popper';
+import Grow from '@mui/material/Grow';
+import MuiPaper from '@mui/material/Paper';
+import ClickAwayListener from '@mui/base/ClickAwayListener';
+import MuiList from '@mui/material/List';
+import MuiListItem from '@mui/material/ListItem';
+import MuiDivider from '@mui/material/Divider';
 import { getCookie } from 'docs/src/modules/utils/helpers';
-import { ACTION_TYPES } from 'docs/src/modules/constants';
 import { useUserLanguage, useTranslate } from 'docs/src/modules/utils/i18n';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    transformOrigin: 'top right',
-  },
-  list: {
-    width: theme.spacing(40),
-    maxHeight: theme.spacing(40),
-    overflow: 'auto',
-  },
-  listItem: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  loading: {
-    display: 'flex',
-    justifyContent: 'center',
-    margin: theme.spacing(1, 0),
-  },
-  divider: {
-    margin: theme.spacing(1, 0),
-  },
+async function fetchNotifications() {
+  if (process.env.NODE_ENV === 'development') {
+    const items = (await import('../../../notifications.json')).default;
+    return items;
+  }
+  const response = await fetch(
+    'https://raw.githubusercontent.com/mui/material-ui/master/docs/notifications.json',
+  );
+  return response.json();
+}
+
+const Paper = styled(MuiPaper)({
+  transformOrigin: 'top right',
+  backgroundImage: 'none',
+});
+const List = styled(MuiList)(({ theme }) => ({
+  width: theme.spacing(40),
+  maxHeight: 440,
+  overflow: 'auto',
+  padding: theme.spacing(1, 0),
+}));
+const ListItem = styled(MuiListItem)({
+  display: 'flex',
+  flexDirection: 'column',
+});
+const Loading = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  margin: theme.spacing(3, 0),
+}));
+const Divider = styled(MuiDivider)(({ theme }) => ({
+  margin: theme.spacing(1, 0),
 }));
 
 export default function Notifications() {
-  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [tooltipOpen, setTooltipOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
   const t = useTranslate();
-  const dispatch = useDispatch();
   const userLanguage = useUserLanguage();
-  const messages = useSelector((state) => state.notifications.messages);
-  const lastSeen = useSelector((state) => state.notifications.lastSeen);
+  const [{ lastSeen, messages }, setNotifications] = React.useState({
+    lastSeen: undefined,
+    messages: undefined,
+  });
 
   const messageList = messages
     ? messages
@@ -72,14 +80,23 @@ export default function Notifications() {
     setOpen((prevOpen) => !prevOpen);
     setTooltipOpen(false);
 
+    if (process.env.NODE_ENV === 'development') {
+      // Skip last seen logic in dev to make editing notifications easier.
+      return;
+    }
+
     if (messageList && messageList.length > 0) {
-      dispatch({
-        type: ACTION_TYPES.NOTIFICATIONS_CHANGE,
-        payload: {
-          lastSeen: messageList[0].id,
-        },
+      const newLastSeen = messageList[0].id;
+      setNotifications((notifications) => {
+        if (newLastSeen !== notifications.lastSeen) {
+          return {
+            messages: notifications.messages,
+            lastSeen: newLastSeen,
+          };
+        }
+        return notifications;
       });
-      document.cookie = `lastSeenNotification=${messageList[0].id};path=/;max-age=31536000`;
+      document.cookie = `lastSeenNotification=${newLastSeen};path=/;max-age=31536000`;
     }
   };
 
@@ -91,36 +108,45 @@ export default function Notifications() {
       return undefined;
     }
 
-    // Soften the pressure on the main thread.
-    const timeout = setTimeout(() => {
-      fetch('https://raw.githubusercontent.com/mui-org/material-ui/master/docs/notifications.json')
-        .then((response) => {
-          return response.json();
-        })
-        .catch(() => {
-          // Swallow the exceptions, e.g. rate limit
-          return [];
-        })
-        .then((newMessages) => {
-          if (active) {
-            const seen = getCookie('lastSeenNotification');
-            const lastSeenNotification = seen === '' ? 0 : parseInt(seen, 10);
-            dispatch({
-              type: ACTION_TYPES.NOTIFICATIONS_CHANGE,
-              payload: {
-                messages: newMessages || [],
-                lastSeen: lastSeenNotification,
-              },
-            });
-          }
+    // Soften the pressure on the main thread
+    // and create some distraction.
+    const timeout = setTimeout(async () => {
+      const notifications = await fetchNotifications().catch(() => {
+        // Swallow the exceptions, e.g. rate limit
+        return [];
+      });
+
+      if (active) {
+        // Permanent notifications
+        const filteredNotifications = [
+          {
+            id: 0,
+            title: "Let's translate!",
+            text: '<a style="color: inherit;" target="_blank" rel="noopener" data-ga-event-category="l10n" data-ga-event-action="notification" data-ga-event-label="zh" href="https://translate.mui.com/">帮助 MUI 将文档翻译成中文</a>. 🇨🇳',
+            userLanguage: 'zh',
+          },
+          {
+            id: 1,
+            text: 'You can <a style="color: inherit;" target="_blank" rel="noopener" href="https://twitter.com/MUI_hq">follow us on Twitter</a> or subscribe on <a style="color: inherit;" target="_blank" rel="noopener" href="/blog/">our blog</a> to receive exclusive tips and updates about MUI and the React ecosystem.',
+          },
+          // Only 2
+          ...notifications.splice(-2),
+        ];
+
+        const seen = getCookie('lastSeenNotification');
+        const lastSeenNotification = seen === undefined ? 0 : parseInt(seen, 10);
+        setNotifications({
+          messages: filteredNotifications,
+          lastSeen: lastSeenNotification,
         });
+      }
     }, 1500);
 
     return () => {
       clearTimeout(timeout);
       active = false;
     };
-  }, []);
+  }, [messages]);
 
   return (
     <React.Fragment>
@@ -136,7 +162,7 @@ export default function Notifications() {
         enterDelay={300}
       >
         <IconButton
-          color="inherit"
+          color="primary"
           ref={anchorRef}
           aria-controls={open ? 'notifications-popup' : undefined}
           aria-haspopup="true"
@@ -145,7 +171,7 @@ export default function Notifications() {
           data-ga-event-action="toggleNotifications"
         >
           <Badge
-            color="secondary"
+            color="error"
             badgeContent={
               messageList
                 ? messageList.reduce(
@@ -155,7 +181,7 @@ export default function Notifications() {
                 : 0
             }
           >
-            <NotificationsIcon />
+            <NotificationsNoneRoundedIcon fontSize="small" />
           </Badge>
         </IconButton>
       </Tooltip>
@@ -175,21 +201,40 @@ export default function Notifications() {
             }}
           >
             <Grow in={open} {...TransitionProps}>
-              <Paper className={classes.paper}>
-                <List className={classes.list}>
+              <Paper
+                sx={{
+                  mt: 0.5,
+                  border: '1px solid',
+                  borderColor: (theme) =>
+                    theme.palette.mode === 'dark' ? 'primaryDark.700' : 'grey.200',
+                  boxShadow: (theme) =>
+                    `0px 4px 20px ${
+                      theme.palette.mode === 'dark'
+                        ? 'rgba(0, 0, 0, 0.5)'
+                        : 'rgba(170, 180, 190, 0.3)'
+                    }`,
+                }}
+              >
+                <List>
                   {messageList ? (
                     messageList.map((message, index) => (
                       <React.Fragment key={message.id}>
-                        <ListItem alignItems="flex-start" className={classes.listItem}>
-                          <Typography gutterBottom>{message.title}</Typography>
-                          <Typography gutterBottom variant="body2">
+                        <ListItem alignItems="flex-start">
+                          <Typography gutterBottom>
+                            <span
+                              // eslint-disable-next-line react/no-danger
+                              dangerouslySetInnerHTML={{ __html: message.title }}
+                            />
+                          </Typography>
+                          <Typography gutterBottom variant="body2" color="text.secondary">
                             <span
                               id="notification-message"
+                              // eslint-disable-next-line react/no-danger
                               dangerouslySetInnerHTML={{ __html: message.text }}
                             />
                           </Typography>
                           {message.date && (
-                            <Typography variant="caption" color="textSecondary">
+                            <Typography variant="caption" color="text.secondary">
                               {new Date(message.date).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'long',
@@ -198,15 +243,13 @@ export default function Notifications() {
                             </Typography>
                           )}
                         </ListItem>
-                        {index < messageList.length - 1 ? (
-                          <Divider className={classes.divider} />
-                        ) : null}
+                        {index < messageList.length - 1 ? <Divider /> : null}
                       </React.Fragment>
                     ))
                   ) : (
-                    <div className={classes.loading}>
+                    <Loading>
                       <CircularProgress size={32} />
-                    </div>
+                    </Loading>
                   )}
                 </List>
               </Paper>

@@ -1,22 +1,6 @@
-import findPages from /* preval */ 'docs/src/modules/utils/findPages';
+import type { MuiPage, OrderedMuiPage } from 'docs/src/MuiPage';
 
-export interface MuiPage {
-  pathname: string;
-  children?: MuiPage[];
-  disableDrawer?: boolean;
-  displayNav?: boolean;
-  /**
-   * Props spread to the Link component
-   */
-  linkProps?: Record<string, unknown>;
-  subheader?: string;
-  /**
-   * Overrides the default page title.
-   */
-  title?: string;
-}
-
-const pages: MuiPage[] = [
+const pages: readonly MuiPage[] = [
   {
     pathname: '/components',
     children: [
@@ -24,17 +8,7 @@ const pages: MuiPage[] = [
       { pathname: '/components/autocomplete' },
     ],
   },
-  {
-    title: 'Component API',
-    pathname: '/api-docs',
-    children: [...findPages[0].children!]
-      .sort((a, b) =>
-        a.pathname.replace('/api-docs/', '').localeCompare(b.pathname.replace('/api-docs/', '')),
-      )
-      .map((page) => {
-        return { ...page, linkProps: { as: page.pathname.replace(/^\/api-docs/, '/api') } };
-      }),
-  },
 ];
 
+export type { MuiPage, OrderedMuiPage };
 export default pages;

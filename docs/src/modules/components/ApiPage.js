@@ -1,77 +1,17 @@
-/* eslint-disable material-ui/no-hardcoded-labels, react/no-danger */
+/* eslint-disable react/no-danger */
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { exactProp } from '@material-ui/utils';
-import Typography from '@material-ui/core/Typography';
+import { exactProp } from '@mui/utils';
+import Typography from '@mui/material/Typography';
 import { useTranslate, useUserLanguage } from 'docs/src/modules/utils/i18n';
+import PropertiesTable from 'docs/src/modules/components/PropertiesTable';
 import HighlightedCode from 'docs/src/modules/components/HighlightedCode';
 import MarkdownElement from 'docs/src/modules/components/MarkdownElement';
 import AppLayoutDocs from 'docs/src/modules/components/AppLayoutDocs';
-import { SOURCE_CODE_ROOT_URL } from 'docs/src/modules/constants';
-
-function PropsTable(props) {
-  const { componentProps, propDescriptions } = props;
-  const t = useTranslate();
-
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th align="left">{t('api-docs.name')}</th>
-          <th align="left">{t('api-docs.type')}</th>
-          <th align="left">{t('api-docs.default')}</th>
-          <th align="left">{t('api-docs.description')}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Object.entries(componentProps).map(([propName, propData]) => {
-          const typeDescription = propData.type.description || propData.type.name;
-          const propDefault = propData.default || (propData.type.name === 'bool' && 'false');
-          return (
-            propData.description !== '@ignore' && (
-              <tr key={propName}>
-                <td align="left">
-                  <span className={clsx('prop-name', propData.required ? 'required' : null)}>
-                    {propName}
-                    {propData.required ? (
-                      <sup>
-                        <abbr title="required">*</abbr>
-                      </sup>
-                    ) : null}
-                  </span>
-                </td>
-                <td align="left">
-                  <span
-                    className="prop-type"
-                    dangerouslySetInnerHTML={{ __html: typeDescription }}
-                  />
-                </td>
-                <td align="left">
-                  {propDefault && <span className="prop-default">{propDefault}</span>}
-                </td>
-                <td
-                  align="left"
-                  dangerouslySetInnerHTML={{
-                    __html: propDescriptions[propName] || '',
-                  }}
-                />
-              </tr>
-            )
-          );
-        })}
-      </tbody>
-    </table>
-  );
-}
-
-PropsTable.propTypes = {
-  componentProps: PropTypes.object.isRequired,
-  propDescriptions: PropTypes.object.isRequired,
-};
+import Ad from 'docs/src/modules/components/Ad';
 
 function ClassesTable(props) {
-  const { componentName, componentStyles, classDescriptions } = props;
+  const { componentStyles, classDescriptions } = props;
   const t = useTranslate();
 
   return (
@@ -91,7 +31,8 @@ function ClassesTable(props) {
             </td>
             <td align="left">
               <span className="prop-name">
-                .{componentStyles.globalClasses[className] || `Mui${componentName}-${className}`}
+                .
+                {componentStyles.globalClasses[className] || `${componentStyles.name}-${className}`}
               </span>
             </td>
             <td
@@ -113,19 +54,78 @@ function ClassesTable(props) {
 
 ClassesTable.propTypes = {
   classDescriptions: PropTypes.object.isRequired,
-  componentName: PropTypes.string.isRequired,
   componentStyles: PropTypes.object.isRequired,
 };
 
-function getTransaltedHeader(t, header) {
+function SlotsTable(props) {
+  const { componentSlots, slotDescriptions } = props;
+  const t = useTranslate();
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th align="left">{t('api-docs.name')}</th>
+          <th align="left">{t('api-docs.defaultClass')}</th>
+          <th align="left">{t('api-docs.defaultValue')}</th>
+          <th align="left">{t('api-docs.description')}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {componentSlots.map(({ class: className, name, default: defaultValue }) => {
+          return (
+            <tr key={name}>
+              <td align="left" width="15%">
+                <span className="slot-name">{name}</span>
+              </td>
+              <td align="left" width="25%">
+                <span
+                  className="slot-defaultClass"
+                  dangerouslySetInnerHTML={{ __html: className }}
+                />
+              </td>
+              <td align="left" width="25%">
+                {defaultValue && <span className="slot-default">{defaultValue}</span>}
+              </td>
+              <td
+                align="left"
+                width="35%"
+                dangerouslySetInnerHTML={{
+                  __html: slotDescriptions[name] || '',
+                }}
+              />
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+SlotsTable.propTypes = {
+  componentSlots: PropTypes.array.isRequired,
+  slotDescriptions: PropTypes.object.isRequired,
+};
+
+function getTranslatedHeader(t, header) {
   const translations = {
+    demos: t('api-docs.demos'),
     import: t('api-docs.import'),
-    componentName: t('api-docs.componentName'),
+    'component-name': t('api-docs.componentName'),
     props: t('api-docs.props'),
     inheritance: t('api-docs.inheritance'),
-    demos: t('api-docs.demos'),
+    slots: t('api-docs.slots'),
     css: 'CSS',
   };
+
+  // TODO Drop runtime type-checking once we type-check this file
+  if (!translations.hasOwnProperty(header)) {
+    throw new TypeError(
+      `Unable to translate header '${header}'. Did you mean one of '${Object.keys(
+        translations,
+      ).join("', '")}'`,
+    );
+  }
 
   return translations[header] || header;
 }
@@ -133,19 +133,11 @@ function getTransaltedHeader(t, header) {
 function Heading(props) {
   const { hash, level: Level = 'h2' } = props;
   const t = useTranslate();
-  const kebabCaseHash = hash === 'componentName' ? 'component-name' : `${hash}`;
 
   return (
-    <Level>
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/anchor-has-content */}
-      <a className="anchor-link" id={kebabCaseHash} />
-      {getTransaltedHeader(t, hash)}
-      <a
-        className="anchor-link-style"
-        aria-hidden="true"
-        aria-label="anchor"
-        href={`#${kebabCaseHash}`}
-      >
+    <Level id={hash}>
+      {getTranslatedHeader(t, hash)}
+      <a aria-labelledby={hash} className="anchor-link" href={`#${hash}`} tabIndex={-1}>
         <svg>
           <use xlinkHref="#anchor-link-icon" />
         </svg>
@@ -159,12 +151,13 @@ Heading.propTypes = {
   level: PropTypes.string,
 };
 
-function ApiDocs(props) {
-  const { descriptions, pageContent } = props;
+export default function ApiPage(props) {
+  const { descriptions, disableAd = false, pageContent } = props;
   const t = useTranslate();
   const userLanguage = useUserLanguage();
 
   const {
+    cssComponent,
     demos,
     filename,
     forwardsRefTo,
@@ -172,43 +165,69 @@ function ApiDocs(props) {
     name: componentName,
     props: componentProps,
     spread,
-    styledComponent,
     styles: componentStyles,
+    slots: componentSlots,
   } = pageContent;
 
-  const { componentDescription, classDescriptions, propDescriptions } = descriptions[userLanguage];
+  const isJoyComponent = filename.includes('mui-joy');
+  const defaultPropsLink = isJoyComponent
+    ? '/joy-ui/customization/themed-components/#default-props'
+    : '/material-ui/customization/theme-components/#default-props';
+  const styleOverridesLink = isJoyComponent
+    ? '/joy-ui/customization/themed-components/#style-overrides'
+    : '/material-ui/customization/theme-components/#global-style-overrides';
+  const extendVariantsLink = isJoyComponent
+    ? '/joy-ui/customization/themed-components/#extend-variants'
+    : '';
+  const {
+    componentDescription,
+    componentDescriptionToc = [],
+    classDescriptions,
+    propDescriptions,
+    slotDescriptions,
+  } = descriptions[userLanguage];
   const description = t('api-docs.pageDescription').replace(/{{name}}/, componentName);
+  const slotExtraDescription = extendVariantsLink
+    ? t('api-docs.slotDescription').replace(/{{extendVariantsLink}}/, extendVariantsLink)
+    : '';
+  if (slotDescriptions && slotExtraDescription) {
+    Object.keys(slotDescriptions).forEach((slot) => {
+      if (slotDescriptions[slot].match(slotExtraDescription)) {
+        return;
+      }
+      slotDescriptions[slot] += ` ${slotExtraDescription}`;
+    });
+  }
 
   const source = filename
-    .replace(
-      /\/packages\/material-ui(-(.+?))?\/src/,
-      (match, dash, pkg) => `@material-ui/${pkg || 'core'}`,
-    )
+    .replace(/\/packages\/mui(-(.+?))?\/src/, (match, dash, pkg) => `@mui/${pkg}`)
     // convert things like `/Table/Table.js` to ``
     .replace(/\/([^/]+)\/\1\.(js|tsx)$/, '');
 
-  const sections = [
-    'import',
-    componentStyles.name && 'component-name',
-    'props',
-    componentStyles.classes && 'css',
-    'demos',
-  ];
+  // Prefer linking the .tsx or .d.ts for the "Edit this page" link.
+  const apiSourceLocation = filename.replace('.js', '.d.ts');
 
-  const toc = [];
-  sections.forEach((sectionName) => {
-    if (sectionName) {
-      toc.push({
-        text: getTransaltedHeader(t, sectionName),
-        hash: sectionName,
-        children: [
-          ...(sectionName === 'props' && inheritance
-            ? [{ text: t('api-docs.inheritance'), hash: 'inheritance', children: [] }]
-            : []),
-        ],
-      });
-    }
-  });
+  function createTocEntry(sectionName) {
+    return {
+      text: getTranslatedHeader(t, sectionName),
+      hash: sectionName,
+      children: [
+        ...(sectionName === 'props' && inheritance
+          ? [{ text: t('api-docs.inheritance'), hash: 'inheritance', children: [] }]
+          : []),
+      ],
+    };
+  }
+
+  const toc = [
+    createTocEntry('demos'),
+    createTocEntry('import'),
+    ...componentDescriptionToc,
+    componentStyles.name && createTocEntry('component-name'),
+    createTocEntry('props'),
+    componentStyles.classes.length > 0 && createTocEntry('css'),
+    componentSlots?.length > 0 && createTocEntry('slots'),
+  ].filter(Boolean);
 
   // The `ref` is forwarded to the root element.
   let refHint = t('api-docs.refRootElement');
@@ -236,17 +255,31 @@ function ApiDocs(props) {
   return (
     <AppLayoutDocs
       description={description}
-      disableAd={false}
+      disableAd={disableAd}
       disableToc={false}
-      location={filename}
-      title={`${componentName} API – Material-UI`}
+      location={apiSourceLocation}
+      title={`${componentName} API`}
       toc={toc}
     >
       <MarkdownElement>
         <h1>{componentName} API</h1>
-        <Typography variant="h5" component="p" className="description" gutterBottom>
+        <Typography
+          variant="h5"
+          component="p"
+          className={`description${disableAd ? '' : ' ad'}`}
+          gutterBottom
+        >
           {description}
+          {disableAd ? null : <Ad />}
         </Typography>
+        <Heading hash="demos" />
+        <div
+          className="MuiCallout-root MuiCallout-info"
+          dangerouslySetInnerHTML={{
+            __html: `<p>For examples and details on the usage of this React component, visit the component demo pages:</p>
+              ${demos}`,
+          }}
+        />
         <Heading hash="import" />
         <HighlightedCode
           code={`
@@ -260,28 +293,45 @@ import { ${componentName} } from '${source}';`}
           <React.Fragment>
             <br />
             <br />
-            <span dangerouslySetInnerHTML={{ __html: componentDescription }} />
-          </React.Fragment>
-        ) : null}
-        {componentStyles.name && (
-          <React.Fragment>
-            <Heading hash="componentName" />
             <span
               dangerouslySetInnerHTML={{
-                __html: t('api-docs.styleOverrides').replace(
-                  /{{componentStyles\.name}}/,
-                  componentStyles.name,
-                ),
+                __html: componentDescription,
+              }}
+            />
+          </React.Fragment>
+        ) : null}
+        {(componentStyles.name || isJoyComponent) && (
+          <React.Fragment>
+            <Heading hash="component-name" />
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t('api-docs.styleOverrides')
+                  .replace(
+                    /{{componentStyles\.name}}/,
+                    isJoyComponent ? `Joy${componentName}` : componentStyles.name,
+                  )
+                  .replace(/{{defaultPropsLink}}/, defaultPropsLink)
+                  .replace(/{{styleOverridesLink}}/, styleOverridesLink),
               }}
             />
           </React.Fragment>
         )}
         <Heading hash="props" />
-        <PropsTable componentProps={componentProps} propDescriptions={propDescriptions} />
+        <p dangerouslySetInnerHTML={{ __html: spreadHint }} />
+        <PropertiesTable properties={componentProps} propertiesDescriptions={propDescriptions} />
         <br />
+        {cssComponent && (
+          <React.Fragment>
+            <span
+              dangerouslySetInnerHTML={{
+                __html: t('api-docs.cssComponent').replace(/{{name}}/, componentName),
+              }}
+            />
+            <br />
+            <br />
+          </React.Fragment>
+        )}
         <span dangerouslySetInnerHTML={{ __html: refHint }} />
-        <br />
-        <span dangerouslySetInnerHTML={{ __html: spreadHint }} />
         {inheritance && (
           <React.Fragment>
             <Heading hash="inheritance" level="h3" />
@@ -299,31 +349,21 @@ import { ${componentName} } from '${source}';`}
         {Object.keys(componentStyles.classes).length ? (
           <React.Fragment>
             <Heading hash="css" />
-            <ClassesTable
-              componentName={componentName}
-              componentStyles={componentStyles}
-              classDescriptions={classDescriptions}
-            />
+            <ClassesTable componentStyles={componentStyles} classDescriptions={classDescriptions} />
             <br />
             <span dangerouslySetInnerHTML={{ __html: t('api-docs.overrideStyles') }} />
-            {styledComponent ? (
-              <span
-                dangerouslySetInnerHTML={{ __html: t('api-docs.overrideStylesStyledComponent') }}
-              />
-            ) : (
-              <span
-                dangerouslySetInnerHTML={{
-                  __html: t('api-docs.overrideStylesJss').replace(
-                    /{{URL}}/,
-                    `${SOURCE_CODE_ROOT_URL}${filename}`,
-                  ),
-                }}
-              />
-            )}
+            <span
+              dangerouslySetInnerHTML={{ __html: t('api-docs.overrideStylesStyledComponent') }}
+            />
           </React.Fragment>
         ) : null}
-        <Heading hash="demos" />
-        <span dangerouslySetInnerHTML={{ __html: demos }} />
+        {componentSlots?.length ? (
+          <React.Fragment>
+            <Heading hash="slots" />
+            <SlotsTable componentSlots={componentSlots} slotDescriptions={slotDescriptions} />
+            <br />
+          </React.Fragment>
+        ) : null}
       </MarkdownElement>
       <svg style={{ display: 'none' }} xmlns="http://www.w3.org/2000/svg">
         <symbol id="anchor-link-icon" viewBox="0 0 16 16">
@@ -334,13 +374,12 @@ import { ${componentName} } from '${source}';`}
   );
 }
 
-ApiDocs.propTypes = {
+ApiPage.propTypes = {
   descriptions: PropTypes.object.isRequired,
+  disableAd: PropTypes.bool,
   pageContent: PropTypes.object.isRequired,
 };
 
 if (process.env.NODE_ENV !== 'production') {
-  ApiDocs.propTypes = exactProp(ApiDocs.propTypes);
+  ApiPage.propTypes = exactProp(ApiPage.propTypes);
 }
-
-export default ApiDocs;

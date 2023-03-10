@@ -1,58 +1,76 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import { exactProp } from '@material-ui/utils';
-import NoSsr from '@material-ui/core/NoSsr';
+import { useRouter } from 'next/router';
+import { styled } from '@mui/material/styles';
+import { exactProp } from '@mui/utils';
+import GlobalStyles from '@mui/material/GlobalStyles';
+import NoSsr from '@mui/material/NoSsr';
+import { pathnameToLanguage } from 'docs/src/modules/utils/helpers';
 import Head from 'docs/src/modules/components/Head';
 import AppFrame from 'docs/src/modules/components/AppFrame';
 import EditPage from 'docs/src/modules/components/EditPage';
 import AppContainer from 'docs/src/modules/components/AppContainer';
 import AppTableOfContents from 'docs/src/modules/components/AppTableOfContents';
-import Ad from 'docs/src/modules/components/Ad';
-import AdManager from 'docs/src/modules/components/AdManager';
-import AdGuest from 'docs/src/modules/components/AdGuest';
 import AppLayoutDocsFooter from 'docs/src/modules/components/AppLayoutDocsFooter';
+import BackToTop from 'docs/src/modules/components/BackToTop';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
+const Main = styled('main', {
+  shouldForwardProp: (prop) => prop !== 'disableToc',
+})(({ disableToc, theme }) => ({
+  display: 'grid',
+  width: '100%',
+  ...(disableToc
+    ? {
+        [theme.breakpoints.up('lg')]: {
+          marginRight: '5%',
+        },
+      }
+    : {
+        [theme.breakpoints.up('md')]: {
+          gridTemplateColumns: '1fr 242px',
+        },
+      }),
+  '& .markdown-body .comment-link': {
+    display: 'inline-block',
   },
-  container: {
+}));
+
+const StyledAppContainer = styled(AppContainer, {
+  shouldForwardProp: (prop) => prop !== 'disableAd',
+})(({ disableAd, theme }) => {
+  return {
     position: 'relative',
-  },
-  actions: {
-    position: 'absolute',
-    right: 16,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-  },
-  ad: {
-    '& .description': {
-      marginBottom: 198,
-    },
-    '& .description.ad': {
-      marginBottom: 40,
-    },
-  },
-  toc: {
-    [theme.breakpoints.up('sm')]: {
-      width: 'calc(100% - 175px)',
-    },
+    // By default, a grid item cannot be smaller than the size of its content.
+    // https://stackoverflow.com/questions/43311943/prevent-content-from-expanding-grid-items
+    minWidth: 0,
+    ...(!disableAd && {
+      '&& .description': {
+        marginBottom: 198,
+      },
+      '&& .description.ad': {
+        marginBottom: 40,
+      },
+    }),
     [theme.breakpoints.up('lg')]: {
-      width: 'calc(100% - 175px - 240px)',
+      paddingLeft: '60px',
+      paddingRight: '60px',
     },
-  },
-  disableToc: {
-    [theme.breakpoints.up('lg')]: {
-      marginRight: '5%',
-    },
+  };
+});
+
+const ActionsDiv = styled('div')(({ theme }) => ({
+  display: 'flex',
+  marginTop: -10,
+  marginBottom: -15,
+  [theme.breakpoints.up('lg')]: {
+    justifyContent: 'flex-end',
   },
 }));
 
 function AppLayoutDocs(props) {
+  const router = useRouter();
   const {
+    BannerComponent,
     children,
     description,
     disableAd = false,
@@ -61,50 +79,70 @@ function AppLayoutDocs(props) {
     title,
     toc,
   } = props;
-  const classes = useStyles();
 
   if (description === undefined) {
     throw new Error('Missing description in the page');
   }
 
+  const { canonicalAs } = pathnameToLanguage(router.asPath);
+  let productName = 'MUI';
+  if (canonicalAs.startsWith('/material-ui/')) {
+    productName = 'Material UI';
+  } else if (canonicalAs.startsWith('/base/')) {
+    productName = 'MUI Base';
+  } else if (canonicalAs.startsWith('/x/')) {
+    productName = 'MUI X';
+  } else if (canonicalAs.startsWith('/system/')) {
+    productName = 'MUI System';
+  } else if (canonicalAs.startsWith('/toolpad/')) {
+    productName = 'MUI Toolpad';
+  } else if (canonicalAs.startsWith('/joy-ui/')) {
+    productName = 'Joy UI';
+  }
+
   return (
-    <AppFrame>
-      <AdManager>
-        <Head title={`${title} - Material-UI`} description={description} />
-        {disableAd ? null : (
-          <AdGuest>
-            <Ad placement="body" />
-          </AdGuest>
-        )}
-        <div
-          className={clsx(classes.root, {
-            [classes.ad]: !disableAd,
-            [classes.toc]: !disableToc,
-            [classes.disableToc]: disableToc,
-          })}
-        >
-          <AppContainer className={classes.container}>
-            <div className={classes.actions}>
-              {location && <EditPage markdownLocation={location} />}
-            </div>
+    <AppFrame BannerComponent={BannerComponent}>
+      <GlobalStyles
+        styles={{
+          ':root': {
+            '--MuiDocs-navDrawer-width': '300px',
+          },
+        }}
+      />
+      <Head
+          title={`${title} - ${productName}`}
+          description={description}
+          largeCard={false}
+          card="https://mui.com/static/logo.png"
+        />
+        <Main disableToc={disableToc}>
+          {/*
+            Render the TOCs first to avoid layout shift when the HTML is streamed.
+            See https://jakearchibald.com/2014/dont-use-flexbox-for-page-layout/ for more details.
+          */}
+          <StyledAppContainer disableAd={disableAd}>
+            <ActionsDiv>
+              <EditPage markdownLocation={location} />
+            </ActionsDiv>
             {children}
             <NoSsr>
-              <AppLayoutDocsFooter />
+              <AppLayoutDocsFooter tableOfContents={toc} />
             </NoSsr>
-          </AppContainer>
-        </div>
-        {disableToc ? null : <AppTableOfContents items={toc} />}
-      </AdManager>
+          </StyledAppContainer>
+          {disableToc ? null : <AppTableOfContents toc={toc} />}
+        </Main>
+      <BackToTop />
     </AppFrame>
   );
 }
 
 AppLayoutDocs.propTypes = {
+  BannerComponent: PropTypes.elementType,
   children: PropTypes.node.isRequired,
   description: PropTypes.string.isRequired,
   disableAd: PropTypes.bool.isRequired,
   disableToc: PropTypes.bool.isRequired,
-  location: PropTypes.string,
+  location: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   toc: PropTypes.array.isRequired,
 };

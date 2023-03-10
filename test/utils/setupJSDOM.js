@@ -3,15 +3,15 @@ const Mocha = require('mocha');
 const createDOM = require('./createDOM');
 const { createMochaHooks } = require('./mochaHooks');
 
-// Enable missing act warnings: https://github.com/facebook/react/blob/v16.13.1/packages/react-reconciler/src/ReactFiberHooks.js#L965
-// TODO: Revisit once https://github.com/facebook/react/issues/15439 is resolved.
+// Enable missing act warnings: https://github.com/reactwg/react-18/discussions/102
 global.jest = null;
+global.IS_REACT_ACT_ENVIRONMENT = true;
 
 createDOM();
 require('./init');
 
 testingLibrary.configure({
-  // JSDOM logs errors otherwise on `getComputedStyles(element, pseudoElement)` calls.
+  // JSDOM logs errors otherwise on `getComputedStyle(element, pseudoElement)` calls.
   computedStyleSupportsPseudoElements: false,
 });
 

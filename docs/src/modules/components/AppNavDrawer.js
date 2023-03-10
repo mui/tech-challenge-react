@@ -1,28 +1,39 @@
 import * as React from 'react';
-import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import Drawer from '@material-ui/core/Drawer';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Divider from '@material-ui/core/Divider';
-import Hidden from '@material-ui/core/Hidden';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Box from '@material-ui/core/Box';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import { styled, alpha } from '@mui/material/styles';
+import List from '@mui/material/List';
+import Drawer from '@mui/material/Drawer';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Box from '@mui/material/Box';
+import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/utils';
+import SvgMuiLogo from 'docs/src/icons/SvgMuiLogo';
 import DiamondSponsors from 'docs/src/modules/components/DiamondSponsors';
 import AppNavDrawerItem from 'docs/src/modules/components/AppNavDrawerItem';
-import Link from 'docs/src/modules/components/Link';
-import { pageToTitleI18n } from 'docs/src/modules/utils/helpers';
+import { pathnameToLanguage, pageToTitleI18n } from 'docs/src/modules/utils/helpers';
 import PageContext from 'docs/src/modules/components/PageContext';
 import { useUserLanguage, useTranslate } from 'docs/src/modules/utils/i18n';
+import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
+import DoneRounded from '@mui/icons-material/DoneRounded';
+import MuiProductSelector from 'docs/src/modules/components/MuiProductSelector';
+import materialPkgJson from '../../../../packages/mui-material/package.json';
+import basePkgJson from '../../../../packages/mui-base/package.json';
+import systemPkgJson from '../../../../packages/mui-system/package.json';
 
-let savedScrollTop = null;
+const savedScrollTop = {};
 
 function PersistScroll(props) {
-  const { children, enabled } = props;
+  const { slot, children, enabled } = props;
   const rootRef = React.useRef();
 
-  React.useEffect(() => {
+  useEnhancedEffect(() => {
     const parent = rootRef.current ? rootRef.current.parentElement : null;
     const activeElement = parent.querySelector('.app-drawer-active');
 
@@ -30,60 +41,69 @@ function PersistScroll(props) {
       return undefined;
     }
 
+    parent.scrollTop = savedScrollTop[slot];
+
     const activeBox = activeElement.getBoundingClientRect();
 
-    if (savedScrollTop === null || activeBox.top - savedScrollTop < 0) {
-      // Center the selected item in the list container.
-      activeElement.scrollIntoView();
-    } else {
-      parent.scrollTop = savedScrollTop;
+    if (activeBox.top < 0 || activeBox.top > window.innerHeight) {
+      parent.scrollTop += activeBox.top - 8 - 32;
     }
 
     return () => {
-      savedScrollTop = parent.scrollTop;
+      savedScrollTop[slot] = parent.scrollTop;
     };
-  }, [enabled]);
+  }, [enabled, slot]);
 
   return <div ref={rootRef}>{children}</div>;
 }
 
 PersistScroll.propTypes = {
-  children: PropTypes.node,
-  enabled: PropTypes.bool,
+  children: PropTypes.node.isRequired,
+  enabled: PropTypes.bool.isRequired,
+  slot: PropTypes.string.isRequired,
 };
 
-const styles = (theme) => ({
-  paper: {
-    width: 240,
-    backgroundColor: theme.palette.background.level1,
+const ToolbarDiv = styled('div')(({ theme }) => ({
+  padding: theme.spacing(1.45, 2),
+  paddingRight: 0,
+  height: 'var(--MuiDocs-header-height)',
+  boxSizing: 'border-box', // TODO have CssBaseline in the Next.js layout
+  display: 'flex',
+  flexGrow: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+}));
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  [theme.breakpoints.up('xs')]: {
+    display: 'none',
   },
-  title: {
-    color: theme.palette.text.secondary,
-    marginBottom: theme.spacing(0.5),
-    '&:hover': {
-      color: theme.palette.primary.main,
+  [theme.breakpoints.up('lg')]: {
+    display: 'block',
+  },
+}));
+
+const AppNavPaperComponent = styled('div')(({ theme }) => {
+  return {
+    width: 'var(--MuiDocs-navDrawer-width)',
+    boxShadow: 'none',
+    boxSizing: 'border-box', // TODO have CssBaseline in the Next.js layout
+    paddingBottom: theme.spacing(5),
+    [theme.breakpoints.up('xs')]: {
+      borderRadius: '0px 10px 10px 0px',
     },
-  },
-  // https://github.com/philipwalton/flexbugs#3-min-height-on-a-flex-container-wont-apply-to-its-flex-items
-  toolbarIe11: {
-    display: 'flex',
-  },
-  toolbar: {
-    ...theme.mixins.toolbar,
-    paddingLeft: theme.spacing(3),
-    display: 'flex',
-    flexGrow: 1,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
+    [theme.breakpoints.up('sm')]: {
+      borderRadius: '0px',
+    },
+  };
 });
 
 function renderNavItems(options) {
   const { pages, ...params } = options;
 
   return (
-    <List disablePadding>
+    <List sx={{ my: 0.5 }}>
       {pages.reduce(
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         (items, page) => reduceChildRoutes({ items, page, ...params }),
@@ -98,30 +118,51 @@ function renderNavItems(options) {
  * @param {import('docs/src/pages').MuiPage} context.page
  */
 function reduceChildRoutes(context) {
-  const { onClose, activePage, items, depth, t } = context;
+  const { onClose, activePageParents, items, depth, t } = context;
   let { page } = context;
-  if (page.displayNav === false) {
+  if (page.inSideNav === false) {
     return items;
   }
 
-  if (page.children && page.children.length > 0) {
-    const title = pageToTitleI18n(page, t);
-    const topLevel = activePage ? activePage.pathname.indexOf(`${page.pathname}/`) === 0 : false;
+  const title = pageToTitleI18n(page, t);
+
+  if (page.children && page.children.length >= 1) {
+    const topLevel =
+      activePageParents.map((parentPage) => parentPage.pathname).indexOf(page.pathname) !== -1;
+
+    let firstChild = page.children[0];
+
+    if (firstChild.subheader && firstChild.children) {
+      firstChild = firstChild.children[0];
+    }
+
+    const subheader = Boolean(page.subheader);
 
     items.push(
       <AppNavDrawerItem
         linkProps={page.linkProps}
         depth={depth}
         key={title}
-        topLevel={topLevel && !page.subheader}
-        openImmediately={topLevel || Boolean(page.subheader)}
         title={title}
+        href={firstChild.pathname}
+        legacy={page.legacy}
+        newFeature={page.newFeature}
+        plan={page.plan}
+        icon={page.icon}
+        subheader={subheader}
+        topLevel={topLevel && !page.subheader}
+        openImmediately={topLevel || subheader}
       >
-        {renderNavItems({ onClose, pages: page.children, activePage, depth: depth + 1, t })}
+        {renderNavItems({
+          onClose,
+          pages: page.children,
+          activePageParents,
+          depth: subheader ? depth : depth + 1,
+          t,
+        })}
       </AppNavDrawerItem>,
     );
   } else {
-    const title = pageToTitleI18n(page, t);
     page = page.children && page.children.length === 1 ? page.children[0] : page;
 
     items.push(
@@ -131,6 +172,11 @@ function reduceChildRoutes(context) {
         key={title}
         title={title}
         href={page.pathname}
+        legacy={page.legacy}
+        newFeature={page.newFeature}
+        plan={page.plan}
+        icon={page.icon}
+        subheader={Boolean(page.subheader)}
         onClick={onClose}
       />,
     );
@@ -144,53 +190,139 @@ function reduceChildRoutes(context) {
 // So: <SwipeableDrawer disableBackdropTransition={false} />
 const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-function AppNavDrawer(props) {
-  const { classes, className, disablePermanent, mobileOpen, onClose, onOpen } = props;
-  const { activePage, pages } = React.useContext(PageContext);
+export default function AppNavDrawer(props) {
+  const { className, disablePermanent, mobileOpen, onClose, onOpen } = props;
+  const { activePageParents, pages } = React.useContext(PageContext);
+  const router = useRouter();
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const userLanguage = useUserLanguage();
   const languagePrefix = userLanguage === 'en' ? '' : `/${userLanguage}`;
   const t = useTranslate();
   const mobile = useMediaQuery((theme) => theme.breakpoints.down('lg'));
 
   const drawer = React.useMemo(() => {
-    const navItems = renderNavItems({ onClose, pages, activePage, depth: 0, t });
+    const { canonicalAs } = pathnameToLanguage(router.asPath);
+
+    const navItems = renderNavItems({ onClose, pages, activePageParents, depth: 0, t });
+
+    const renderVersionSelector = (versions, sx) => {
+      if (!versions?.length) {
+        return null;
+      }
+
+      const currentVersion = versions.find((version) => version.current) || versions[0];
+      return (
+        <React.Fragment>
+          <Button
+            id="mui-version-selector"
+            onClick={(event) => {
+              setAnchorEl(event.currentTarget);
+            }}
+            endIcon={
+              versions.length > 1 ? (
+                <ArrowDropDownRoundedIcon fontSize="small" sx={{ ml: -0.5 }} />
+              ) : null
+            }
+            sx={[
+              (theme) => ({
+                py: 0.1,
+                minWidth: 0,
+                fontSize: theme.typography.pxToRem(13),
+                fontWeight: 500,
+                color:
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.primary[300]
+                    : theme.palette.primary[600],
+                '& svg': {
+                  ml: -0.6,
+                  width: 18,
+                  height: 18,
+                },
+              }),
+              ...(Array.isArray(sx) ? sx : [sx]),
+            ]}
+          >
+            {currentVersion.text}
+          </Button>
+          <Menu
+            id="mui-version-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            {versions.map((item) => {
+              if (item.text === 'View all versions') {
+                return [
+                  <Divider key="divider" />,
+                  <MenuItem key="all-versions" component="a" href={item.href} onClick={onClose}>
+                    {/* eslint-disable-next-line material-ui/no-hardcoded-labels -- version string is untranslatable */}
+                    {`View all versions`}
+                  </MenuItem>,
+                ];
+              }
+              return (
+                <MenuItem
+                  key={item.text}
+                  {...(item.current
+                    ? {
+                        selected: true,
+                        onClick: () => setAnchorEl(null),
+                      }
+                    : {
+                        component: 'a',
+                        href: item.href,
+                        onClick: onClose,
+                      })}
+                >
+                  {item.text} {item.current && <DoneRounded sx={{ fontSize: 16, ml: 0.25 }} />}
+                </MenuItem>
+              );
+            })}
+          </Menu>
+        </React.Fragment>
+      );
+    };
 
     return (
       <React.Fragment>
-        <div className={classes.toolbarIe11}>
-          <div className={classes.toolbar}>
-            <Link className={classes.title} href="/" onClick={onClose} variant="h6" color="inherit">
-              Material-UI
-            </Link>
-            {process.env.LIB_VERSION ? (
-              <Link
-                color="textSecondary"
-                variant="caption"
-                href={`https://material-ui.com${languagePrefix}/versions/`}
-                onClick={onClose}
-              >
-                {/* eslint-disable-next-line material-ui/no-hardcoded-labels -- version string is untranslatable */}
-                {`v${process.env.LIB_VERSION}`}
-              </Link>
-            ) : null}
-          </div>
-        </div>
-        <Divider />
-        <Box sx={{ mx: 3, my: 2 }}>
-          <DiamondSponsors spot="drawer" />
-        </Box>
+        <ToolbarDiv>
+          <NextLink href="/" passHref legacyBehavior>
+            <Box
+              component="a"
+              onClick={onClose}
+              aria-label={t('goToHome')}
+              sx={{
+                pr: '12px',
+                mr: '4px',
+                borderRight: '1px solid',
+                borderColor: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? alpha(theme.palette.primary[100], 0.08)
+                    : theme.palette.grey[200],
+              }}
+            >
+              <SvgMuiLogo width={30} />
+            </Box>
+          </NextLink>
+        </ToolbarDiv>
+        <Divider
+          sx={{
+            borderColor: (theme) =>
+              theme.palette.mode === 'dark'
+                ? alpha(theme.palette.primary[100], 0.08)
+                : theme.palette.grey[100],
+          }}
+        />
+        <DiamondSponsors />
         {navItems}
       </React.Fragment>
     );
-  }, [activePage, pages, onClose, t, classes, languagePrefix]);
+  }, [activePageParents, pages, onClose, languagePrefix, t, anchorEl, setAnchorEl, router.asPath]);
 
   return (
     <nav className={className} aria-label={t('mainNavigation')}>
       {disablePermanent || mobile ? (
         <SwipeableDrawer
-          classes={{
-            paper: clsx(classes.paper, 'algolia-drawer'),
-          }}
           disableBackdropTransition={!iOS}
           variant="temporary"
           open={mobileOpen}
@@ -199,34 +331,37 @@ function AppNavDrawer(props) {
           ModalProps={{
             keepMounted: true,
           }}
+          PaperProps={{
+            className: 'algolia-drawer',
+            component: AppNavPaperComponent,
+          }}
         >
-          {drawer}
+          <PersistScroll slot="swipeable" enabled={mobileOpen}>
+            {drawer}
+          </PersistScroll>
         </SwipeableDrawer>
       ) : null}
-      {disablePermanent ? null : (
-        <Hidden lgDown implementation="css">
-          <Drawer
-            classes={{
-              paper: classes.paper,
-            }}
-            variant="permanent"
-            open
-          >
-            <PersistScroll enabled={!mobile}>{drawer}</PersistScroll>
-          </Drawer>
-        </Hidden>
+      {disablePermanent || mobile ? null : (
+        <StyledDrawer
+          variant="permanent"
+          PaperProps={{
+            component: AppNavPaperComponent,
+          }}
+          open
+        >
+          <PersistScroll slot="side" enabled>
+            {drawer}
+          </PersistScroll>
+        </StyledDrawer>
       )}
     </nav>
   );
 }
 
 AppNavDrawer.propTypes = {
-  classes: PropTypes.object.isRequired,
   className: PropTypes.string,
   disablePermanent: PropTypes.bool.isRequired,
   mobileOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onOpen: PropTypes.func.isRequired,
 };
-
-export default withStyles(styles)(AppNavDrawer);

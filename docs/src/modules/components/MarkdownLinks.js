@@ -2,8 +2,7 @@ import * as React from 'react';
 import Router from 'next/router';
 import { pathnameToLanguage } from 'docs/src/modules/utils/helpers';
 
-export async function handleEvent(event, as) {
-  // Ignore click for new tab/new window behavior
+export function shoudHandleLinkClick(event) {
   if (
     event.defaultPrevented ||
     event.button !== 0 || // ignore everything but left-click
@@ -12,20 +11,9 @@ export async function handleEvent(event, as) {
     event.altKey ||
     event.shiftKey
   ) {
-    return;
+    return true;
   }
-
-  event.preventDefault();
-
-  let pathname = as.replace(/#(.*)$/, '');
-  pathname = pathnameToLanguage(pathname).canonical;
-
-  const success = await Router.push(pathname, as);
-  if (!success) {
-    return;
-  }
-  window.scrollTo(0, 0);
-  document.body.focus();
+  return false;
 }
 
 /**
@@ -37,29 +25,34 @@ function handleClick(event) {
     activeElement = activeElement.parentElement;
   }
 
-  // Ignore non link clicks
+  // Ignore non internal link clicks
   if (
     activeElement === null ||
     activeElement.nodeName !== 'A' ||
     activeElement.getAttribute('target') === '_blank' ||
-    activeElement.getAttribute('data-no-link') === 'true' ||
+    activeElement.getAttribute('data-no-markdown-link') === 'true' ||
     activeElement.getAttribute('href').indexOf('/') !== 0
   ) {
     return;
   }
 
-  handleEvent(event, activeElement.getAttribute('href'));
-}
+  // Ignore click meant for native link handling, e.g. open in new tab
+  if (shoudHandleLinkClick(event)) {
+    return;
+  }
 
-let bound = false;
+  event.preventDefault();
+  const as = activeElement.getAttribute('href');
+  const canonicalPathname = pathnameToLanguage(as).canonicalPathname;
+  Router.push(canonicalPathname, as);
+}
 
 export default function MarkdownLinks() {
   React.useEffect(() => {
-    if (bound) {
-      return;
-    }
-    bound = true;
     document.addEventListener('click', handleClick);
+    return () => {
+      document.addEventListener('click', handleClick);
+    };
   }, []);
 
   return null;

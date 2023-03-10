@@ -1,77 +1,85 @@
 /* eslint-disable no-restricted-globals */
 import * as React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import DialogActions from '@material-ui/core/DialogActions';
-import TextField from '@material-ui/core/TextField';
-import Collapse from '@material-ui/core/Collapse';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import ThumbUpIcon from '@material-ui/icons/ThumbUpAlt';
-import ThumbDownIcon from '@material-ui/icons/ThumbDownAlt';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import Snackbar from '@material-ui/core/Snackbar';
+import PropTypes from 'prop-types';
+import { styled, useTheme } from '@mui/material/styles';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import ThumbUpIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbDownIcon from '@mui/icons-material/ThumbDownAlt';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import Snackbar from '@mui/material/Snackbar';
 import { getCookie, pageToTitleI18n } from 'docs/src/modules/utils/helpers';
 import PageContext from 'docs/src/modules/components/PageContext';
 import Link from 'docs/src/modules/components/Link';
 import { useUserLanguage, useTranslate } from 'docs/src/modules/utils/i18n';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: theme.spacing(12),
-  },
-  pagination: {
+const PaginationDiv = styled('div')(({ theme }) => {
+  return {
     margin: theme.spacing(3, 0, 4),
     display: 'flex',
     justifyContent: 'space-between',
     [theme.breakpoints.down('sm')]: {
       flexWrap: 'wrap',
     },
-  },
-  pageLinkButton: {
-    textTransform: 'none',
-    fontWeight: theme.typography.fontWeightRegular,
-  },
-  feedbackMessage: {
-    margin: theme.spacing(0, 2),
-  },
-  feedback: {
-    width: 'auto',
-    [theme.breakpoints.down('sm')]: {
-      order: 3,
-      width: '100%',
-    },
-  },
+  };
+});
+
+const PageLinkButton = styled(Button)(({ theme }) => ({
+  fontWeight: theme.typography.fontWeightMedium,
 }));
 
-function flattenPages(pages, current = []) {
-  return pages.reduce((items, item) => {
-    if (item.children && item.children.length > 0) {
-      items = flattenPages(item.children, items);
-    } else {
-      items.push(item.children && item.children.length === 1 ? item.children[0] : item);
-    }
-    return items;
-  }, current);
-}
+const FeedbackGrid = styled(Grid)(({ theme }) => {
+  return {
+    width: 'auto',
+    color: theme.palette.text.secondary,
+    [theme.breakpoints.down('sm')]: {
+      order: 3,
+      marginTop: 40,
+      width: '100%',
+    },
+  };
+});
 
-// To replace with .findIndex() once we stop IE11 support.
-function findIndex(array, comp) {
-  for (let i = 0; i < array.length; i += 1) {
-    if (comp(array[i])) {
-      return i;
-    }
-  }
+/**
+ * @typedef {import('docs/src/pages').MuiPage} MuiPage
+ * @typedef {import('docs/src/pages').OrderedMuiPage} OrderedMuiPage
+ */
 
-  return -1;
+/**
+ * @param {MuiPage[]} pages
+ * @param {MuiPage[]} [current]
+ * @returns {OrderedMuiPage[]}
+ */
+function orderedPages(pages, current = []) {
+  return pages
+    .reduce((items, item) => {
+      if (item.children && item.children.length > 1) {
+        items = orderedPages(item.children, items);
+      } else {
+        items.push(item.children && item.children.length === 1 ? item.children[0] : item);
+      }
+      return items;
+    }, current)
+    .filter((page) => {
+      return (
+        page.inSideNav !== false &&
+        // ignore external pages
+        page.pathname.startsWith('/')
+      );
+    });
 }
 
 async function postFeedback(data) {
-  const env = window.location.host.indexOf('material-ui.com') !== -1 ? 'prod' : 'dev';
+  const env = window.location.host.indexOf('mui.com') !== -1 ? 'prod' : 'dev';
   try {
     const response = await fetch(`${process.env.FEEDBACK_URL}/${env}/feedback`, {
       method: 'POST',
@@ -86,8 +94,80 @@ async function postFeedback(data) {
   }
 }
 
+async function postFeedbackOnSlack(data) {
+  const { rating, comment, commentedSection } = data;
+
+  if (!comment || comment.length < 10) {
+    return 'ignored';
+  }
+
+  /**
+   Not used because I ignore how to encode that with:
+      'content-type': 'application/x-www-form-urlencoded'
+   
+   const complexSlackMessage = {
+     blocks: [
+       {
+         type: 'header',
+         text: {
+           type: 'plain_text',
+           text: `New comment ${rating > 0 ? '👍' : '👎'}`,
+           emoji: true,
+         },
+       },
+       {
+         type: 'section',
+         text: {
+           type: 'plain_text',
+           text: comment,
+           emoji: true,
+         },
+       },
+       {
+         type: 'section',
+         text: {
+           type: 'mrkdwn',
+           text: `v: ${version}, lang: ${language}`,
+         },
+         accessory: {
+           type: 'button',
+           text: {
+             type: 'plain_text',
+             text: 'Go to the page',
+             emoji: true,
+           },
+           url: window.location.host,
+         },
+       },
+     ],
+   };
+  */
+
+  const simpleSlackMessage = [
+    `New comment ${rating === 1 ? '👍' : ''}${rating === 0 ? '👎' : ''}`,
+    `>${comment.split('\n').join('\n>')}`,
+    `sent from ${window.location.href}${
+      commentedSection.text
+        ? ` (from section <${window.location.origin}${window.location.pathname}#${commentedSection.hash}|${commentedSection.text})>`
+        : ''
+    }`,
+  ].join('\n\n');
+
+  try {
+    await fetch(`https://hooks.slack.com/services/${process.env.SLACK_FEEDBACKS_TOKEN}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: JSON.stringify({ text: simpleSlackMessage }),
+    });
+    return 'sent';
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 async function getUserFeedback(id) {
-  const env = location.hostname === 'material-ui.com' ? 'prod' : 'dev';
+  const env = location.hostname === 'mui.com' ? 'prod' : 'dev';
   const URL = `${process.env.FEEDBACK_URL}/${env}/feedback/${id}`;
 
   try {
@@ -103,7 +183,7 @@ async function getUserFeedback(id) {
   }
 }
 
-async function submitFeedback(page, rating, comment, language) {
+async function submitFeedback(page, rating, comment, language, commentedSection) {
   const data = {
     id: getCookie('feedbackId'),
     page,
@@ -113,55 +193,104 @@ async function submitFeedback(page, rating, comment, language) {
     language,
   };
 
-  const result = await postFeedback(data);
-  if (result) {
-    document.cookie = `feedbackId=${result.id};path=/;max-age=31536000`;
-    setTimeout(async () => {
-      const userFeedback = await getUserFeedback(result.id);
-      if (userFeedback) {
-        document.cookie = `feedback=${JSON.stringify(userFeedback)};path=/;max-age=31536000`;
-      }
-    });
+  const resultSlack = await postFeedbackOnSlack({ ...data, commentedSection });
+  if (rating !== undefined) {
+    const resultVote = await postFeedback(data);
+    if (resultVote) {
+      document.cookie = `feedbackId=${resultVote.id};path=/;max-age=31536000`;
+      setTimeout(async () => {
+        const userFeedback = await getUserFeedback(resultVote.id);
+        if (userFeedback) {
+          document.cookie = `feedback=${JSON.stringify(userFeedback)};path=/;max-age=31536000`;
+        }
+      });
+    }
+    return resultSlack && resultVote;
   }
-  return result;
+
+  return resultSlack;
 }
 
 function getCurrentRating(pathname) {
   let userFeedback;
-  if (process.browser) {
+  if (typeof window !== 'undefined') {
     userFeedback = getCookie('feedback');
     userFeedback = userFeedback && JSON.parse(userFeedback);
   }
   return userFeedback && userFeedback[pathname] && userFeedback[pathname].rating;
 }
 
-export default function AppLayoutDocsFooter() {
-  const classes = useStyles();
+/**
+ * @returns { { prevPage: OrderedMuiPage | null; nextPage: OrderedMuiPage | null } }
+ */
+function usePageNeighbours() {
+  const { activePage, pages } = React.useContext(PageContext);
+  const pageList = orderedPages(pages);
+  const currentPageNum = pageList.indexOf(activePage);
+
+  if (currentPageNum === -1) {
+    return { prevPage: null, nextPage: null };
+  }
+
+  const prevPage = pageList[currentPageNum - 1] ?? null;
+  const nextPage = pageList[currentPageNum + 1] ?? null;
+
+  return { prevPage, nextPage };
+}
+
+const EMPTY_SECTION = { hash: '', text: '' };
+
+export default function AppLayoutDocsFooter(props) {
+  const { tableOfContents = [] } = props;
+
+  const theme = useTheme();
   const t = useTranslate();
   const userLanguage = useUserLanguage();
-  const { activePage, pages } = React.useContext(PageContext);
+  const { activePage } = React.useContext(PageContext);
   const [rating, setRating] = React.useState();
   const [comment, setComment] = React.useState('');
-  const [commentOpen, setCommentOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState(false);
   const inputRef = React.useRef();
-  const pageList = flattenPages(pages);
-  const currentPageNum = findIndex(pageList, (page) => page.pathname === activePage?.pathname);
-  const currentPage = pageList[currentPageNum];
-  const prevPage = pageList[currentPageNum - 1];
-  const nextPage = pageList[currentPageNum + 1];
+  const [commentOpen, setCommentOpen] = React.useState(false);
+  const [commentedSection, setCommentedSection] = React.useState(EMPTY_SECTION);
+
+  const { nextPage, prevPage } = usePageNeighbours();
+
+  const sectionOptions = React.useMemo(
+    () =>
+      tableOfContents.flatMap((section) => [
+        {
+          hash: section.hash,
+          text: section.text,
+        },
+        ...section.children.map(({ hash, text }) => ({ hash, text })),
+      ]),
+    [tableOfContents],
+  );
 
   const setCurrentRatingFromCookie = React.useCallback(() => {
-    setRating(getCurrentRating(currentPage.pathname));
-  }, [currentPage.pathname]);
+    if (activePage !== null) {
+      setRating(getCurrentRating(activePage.pathname));
+    }
+  }, [activePage]);
 
   React.useEffect(() => {
     setCurrentRatingFromCookie();
   }, [setCurrentRatingFromCookie]);
 
   async function processFeedback() {
-    const result = await submitFeedback(currentPage.pathname, rating, comment, userLanguage);
+    if (activePage === null) {
+      setSnackbarMessage(t('feedbackFailed'));
+    }
+
+    const result = await submitFeedback(
+      activePage.pathname,
+      rating,
+      comment,
+      userLanguage,
+      commentedSection,
+    );
     if (result) {
       setSnackbarMessage(t('feedbackSubmitted'));
     } else {
@@ -176,6 +305,12 @@ export default function AppLayoutDocsFooter() {
       setRating(vote);
       setCommentOpen(true);
     }
+
+    // Manualy move focus if commment is already open.
+    // If the comment is closed, onEntered will call focus itself;
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const handleChangeTextfield = (event) => {
@@ -188,9 +323,20 @@ export default function AppLayoutDocsFooter() {
     processFeedback();
   };
 
+  // See https://github.com/mui/mui-toolpad/issues/1164 for context.
+  const handleKeyDownForm = (event) => {
+    const modifierKey = (event.metaKey || event.ctrlKey) && !event.shiftKey;
+
+    if (event.key === 'Enter' && modifierKey) {
+      const submitButton = event.currentTarget.querySelector('[type="submit"]');
+      submitButton.click();
+    }
+  };
+
   const handleCancelComment = () => {
     setCommentOpen(false);
     setCurrentRatingFromCookie();
+    setCommentedSection(EMPTY_SECTION);
   };
 
   const handleEntered = () => {
@@ -201,93 +347,132 @@ export default function AppLayoutDocsFooter() {
     setSnackbarOpen(false);
   };
 
+  React.useEffect(() => {
+    const eventListener = (event) => {
+      const feedbackHash = event.target.getAttribute('data-feedback-hash');
+      if (feedbackHash) {
+        const section = sectionOptions.find((item) => item.hash === feedbackHash) || EMPTY_SECTION;
+        setCommentOpen(true);
+        setCommentedSection(section);
+
+        // Manualy move focus if commment is already open.
+        // If the comment is closed, onEntered will call focus itself;
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }
+    };
+    document.addEventListener('click', eventListener);
+    return () => {
+      document.removeEventListener('click', eventListener);
+    };
+  }, [sectionOptions]);
+
+  const hidePagePagination = activePage === null || activePage.ordered === false;
+
   return (
     <React.Fragment>
-      <footer className={classes.root}>
-        {!currentPage ||
-        currentPage.displayNav === false ||
-        (nextPage.displayNav === false && !prevPage) ? null : (
+      <Box component="footer" sx={{ mt: 12 }}>
+        {hidePagePagination ? null : (
           <React.Fragment>
             <Divider />
-            <div className={classes.pagination}>
-              {prevPage ? (
-                <Button
+            <PaginationDiv>
+              {prevPage !== null ? (
+                <PageLinkButton
                   component={Link}
                   noLinkStyle
+                  prefetch={false}
                   href={prevPage.pathname}
-                  size="large"
-                  className={classes.pageLinkButton}
+                  {...prevPage.linkProps}
+                  size="medium"
                   startIcon={<ChevronLeftIcon />}
                 >
                   {pageToTitleI18n(prevPage, t)}
-                </Button>
+                </PageLinkButton>
               ) : (
                 <div />
               )}
-              <Grid
+              <FeedbackGrid
                 container
                 role="group"
                 justifyContent="center"
                 alignItems="center"
                 aria-labelledby="feedback-message"
-                className={classes.feedback}
               >
                 <Typography
                   align="center"
                   component="div"
                   id="feedback-message"
-                  variant="subtitle1"
-                  className={classes.feedbackMessage}
+                  variant="body2"
+                  sx={{ mx: 2 }}
                 >
                   {t('feedbackMessage')}
                 </Typography>
                 <div>
                   <Tooltip title={t('feedbackYes')}>
                     <IconButton onClick={handleClickThumb(1)} aria-pressed={rating === 1}>
-                      <ThumbUpIcon color={rating === 1 ? 'primary' : undefined} />
+                      <ThumbUpIcon fontSize="small" color={rating === 1 ? 'primary' : undefined} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title={t('feedbackNo')}>
                     <IconButton onClick={handleClickThumb(0)} aria-pressed={rating === 0}>
-                      <ThumbDownIcon color={rating === 0 ? 'error' : undefined} />
+                      <ThumbDownIcon fontSize="small" color={rating === 0 ? 'error' : undefined} />
                     </IconButton>
                   </Tooltip>
                 </div>
-              </Grid>
-              {nextPage.displayNav === false ? null : (
-                <Button
+              </FeedbackGrid>
+              {nextPage !== null ? (
+                <PageLinkButton
                   component={Link}
                   noLinkStyle
+                  prefetch={false}
                   href={nextPage.pathname}
-                  size="large"
-                  className={classes.pageLinkButton}
+                  {...nextPage.linkProps}
+                  size="medium"
                   endIcon={<ChevronRightIcon />}
                 >
                   {pageToTitleI18n(nextPage, t)}
-                </Button>
-              )}
-            </div>
+                </PageLinkButton>
+              ) : null}
+            </PaginationDiv>
           </React.Fragment>
         )}
-        <Collapse in={commentOpen} onEntered={handleEntered}>
+        <Collapse
+          in={commentOpen}
+          unmountOnExit
+          onEntered={handleEntered}
+          timeout={{ enter: 0, exit: theme.transitions.duration.standard }}
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
           <form
             aria-labelledby="feedback-message"
             onReset={handleCancelComment}
             onSubmit={handleSubmitComment}
+            onKeyDown={handleKeyDownForm}
           >
-            <Typography component="div" variant="h6" gutterBottom>
-              {t('feedbackTitle')}
-            </Typography>
-            <div>
-              <Typography id="feedback-description" color="textSecondary" gutterBottom>
-                {rating === 1 ? t('feedbackMessageUp') : t('feedbackMessageDown')}
-              </Typography>
+            <Box sx={{ mb: 4 }}>
+              {commentedSection.text ? (
+                <Typography
+                  id="feedback-description"
+                  color="text.secondary"
+                  dangerouslySetInnerHTML={{
+                    __html: t('feedbackSectionSpecific').replace(
+                      '{{sectionName}}',
+                      `"${commentedSection.text}"`,
+                    ),
+                  }}
+                />
+              ) : (
+                <Typography id="feedback-description" color="text.secondary">
+                  {rating === 1 ? t('feedbackMessageUp') : t('feedbackMessageDown')}
+                </Typography>
+              )}
               <TextField
                 multiline
                 margin="dense"
                 name="comment"
                 fullWidth
-                rows={6}
+                rows={4}
                 value={comment}
                 onChange={handleChangeTextfield}
                 inputProps={{
@@ -296,14 +481,29 @@ export default function AppLayoutDocsFooter() {
                   ref: inputRef,
                 }}
               />
-            </div>
-            <DialogActions>
-              <Button type="reset">{t('cancel')}</Button>
-              <Button type="submit">{t('submit')}</Button>
-            </DialogActions>
+              <DialogActions>
+                <Button type="reset">{t('cancel')}</Button>
+                <Button type="submit" variant="contained">
+                  {t('submit')}
+                </Button>
+              </DialogActions>
+              {rating !== 1 && (
+                <Typography id="feedback-description" color="text.secondary">
+                  {t('feedbackMessageToGitHub.usecases')}
+                  <br />
+                  {t('feedbackMessageToGitHub.callToAction.text')}
+                  <Link
+                    href={`${process.env.SOURCE_CODE_REPO}/issues/new?template=${process.env.GITHUB_TEMPLATE_DOCS_FEEDBACK}&page-url=${window.location.href}`}
+                    target="_blank"
+                  >
+                    {t('feedbackMessageToGitHub.callToAction.link')}
+                  </Link>
+                </Typography>
+              )}
+            </Box>
           </form>
         </Collapse>
-      </footer>
+      </Box>
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={3000}
@@ -313,3 +513,7 @@ export default function AppLayoutDocsFooter() {
     </React.Fragment>
   );
 }
+
+AppLayoutDocsFooter.propTypes = {
+  tableOfContents: PropTypes.array,
+};

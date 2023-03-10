@@ -1,12 +1,12 @@
 import * as React from 'react';
-import BrandingRoot from 'docs/src/modules/branding/BrandingRoot';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
 import Link from 'docs/src/modules/components/Link';
+import BrandingCssVarsProvider from 'docs/src/BrandingCssVarsProvider';
 
-export default function LandingPage() {
+export default function Home() {
   return (
-    <BrandingRoot>
+    <BrandingCssVarsProvider>
       <Container>
         <Typography component="h1" variant="h2" sx={{ mt: 8 }}>
           ⚛ Technical challenge @ Material-UI
@@ -18,8 +18,8 @@ export default function LandingPage() {
         <Typography component="h2" variant="h3" sx={{ mt: 3, mb: 1 }}>
           Second phase
         </Typography>
-        <Link href="/components/autocomplete/">Load the page</Link>
+        <Link href="/material-ui/react-autocomplete/">Load the page</Link>
       </Container>
-    </BrandingRoot>
+    </BrandingCssVarsProvider>
   );
 }

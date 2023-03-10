@@ -1,23 +1,42 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { SOURCE_CODE_REPO } from 'docs/src/modules/constants';
+import path from 'path';
+import { useRouter } from 'next/router';
+import { useTheme } from '@mui/system';
+import { exactProp } from '@mui/utils';
 import Demo from 'docs/src/modules/components/Demo';
 import MarkdownElement from 'docs/src/modules/components/MarkdownElement';
-import { exactProp } from '@material-ui/utils';
-import ComponentLinkHeader from 'docs/src/modules/components/ComponentLinkHeader';
+import { pathnameToLanguage } from 'docs/src/modules/utils/helpers';
 import AppLayoutDocs from 'docs/src/modules/components/AppLayoutDocs';
 import { useTranslate, useUserLanguage } from 'docs/src/modules/utils/i18n';
+import BrandingProvider from 'docs/src/BrandingProvider';
 
-const markdownComponents = {
-  'modules/components/ComponentLinkHeader.js': ComponentLinkHeader,
-};
-function MarkdownDocs(props) {
-  const { disableAd = false, disableToc = false, demos = {}, docs, requireDemo } = props;
+function noComponent(moduleID) {
+  return function NoComponent() {
+    throw new Error(`No demo component provided for '${moduleID}'`);
+  };
+}
+
+export default function MarkdownDocs(props) {
+  const theme = useTheme();
+  const router = useRouter();
+  const { canonicalAs } = pathnameToLanguage(router.asPath);
+  const {
+    disableAd = false,
+    disableToc = false,
+    demos = {},
+    docs,
+    demoComponents,
+    srcComponents,
+  } = props;
 
   const userLanguage = useUserLanguage();
   const t = useTranslate();
 
-  const { description, location, rendered, title, toc, headers } = docs[userLanguage] || docs.en;
+  const localizedDoc = docs[userLanguage] || docs.en;
+  const { description, location, rendered, title, toc } = localizedDoc;
+
+  const Wrapper = React.Fragment;
 
   return (
     <AppLayoutDocs
@@ -30,12 +49,26 @@ function MarkdownDocs(props) {
     >
       {rendered.map((renderedMarkdownOrDemo, index) => {
         if (typeof renderedMarkdownOrDemo === 'string') {
-          return <MarkdownElement key={index} renderedMarkdown={renderedMarkdownOrDemo} />;
+          return (
+            <Wrapper key={index}>
+              <MarkdownElement renderedMarkdown={renderedMarkdownOrDemo} />
+            </Wrapper>
+          );
         }
 
         if (renderedMarkdownOrDemo.component) {
-          const Component = markdownComponents[renderedMarkdownOrDemo.component];
-          return <Component key={index} headers={headers} options={renderedMarkdownOrDemo} />;
+          const name = renderedMarkdownOrDemo.component;
+          const Component = srcComponents?.[name];
+
+          if (Component === undefined) {
+            throw new Error(`No component found at the path ${path.join('docs/src', name)}`);
+          }
+
+          return (
+            <Wrapper key={index}>
+              <Component {...renderedMarkdownOrDemo} markdown={localizedDoc} />
+            </Wrapper>
+          );
         }
 
         const name = renderedMarkdownOrDemo.demo;
@@ -67,18 +100,26 @@ function MarkdownDocs(props) {
           );
         }
 
+        const splitLocationBySlash = location.split('/');
+        splitLocationBySlash.pop();
+        const fileNameWithLocation = `${splitLocationBySlash.join('/')}/${name}`;
+
         return (
           <Demo
             key={index}
+            mode={theme.palette.mode}
             demo={{
               raw: demo.raw,
-              js: requireDemo(demo.module).default,
+              js: demoComponents[demo.module] ?? noComponent(demo.module),
+              scope: demos.scope,
+              jsxPreview: demo.jsxPreview,
               rawTS: demo.rawTS,
-              tsx: demo.moduleTS ? requireDemo(demo.moduleTS).default : null,
+              tsx: demoComponents[demo.moduleTS] ?? null,
+              gaLabel: fileNameWithLocation.replace(/^\/docs\/data\//, ''),
             }}
             disableAd={disableAd}
             demoOptions={renderedMarkdownOrDemo}
-            githubLocation={`${SOURCE_CODE_REPO}/blob/v${process.env.LIB_VERSION}/docs/src/${name}`}
+            githubLocation={`${process.env.SOURCE_CODE_REPO}/blob/v${process.env.LIB_VERSION}${fileNameWithLocation}`}
           />
         );
       })}
@@ -87,15 +128,14 @@ function MarkdownDocs(props) {
 }
 
 MarkdownDocs.propTypes = {
+  demoComponents: PropTypes.object,
   demos: PropTypes.object,
   disableAd: PropTypes.bool,
   disableToc: PropTypes.bool,
   docs: PropTypes.object.isRequired,
-  requireDemo: PropTypes.func,
+  srcComponents: PropTypes.object,
 };
 
 if (process.env.NODE_ENV !== 'production') {
   MarkdownDocs.propTypes = exactProp(MarkdownDocs.propTypes);
 }
-
-export default MarkdownDocs;

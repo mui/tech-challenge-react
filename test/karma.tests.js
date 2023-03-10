@@ -1,51 +1,59 @@
 import './utils/init';
 import './utils/setupKarma';
 
-const integrationContext = require.context(
-  '../packages/material-ui/test/integration',
+const materialIntegrationContext = require.context(
+  '../packages/mui-material/test/integration',
   true,
   /\.test\.(js|ts|tsx)$/,
 );
-integrationContext.keys().forEach(integrationContext);
+materialIntegrationContext.keys().forEach(materialIntegrationContext);
 
-const coreUnitContext = require.context(
-  '../packages/material-ui/src/',
+const baseIntegrationContext = require.context(
+  '../packages/mui-base/test/integration',
   true,
   /\.test\.(js|ts|tsx)$/,
 );
-coreUnitContext.keys().forEach(coreUnitContext);
+baseIntegrationContext.keys().forEach(baseIntegrationContext);
 
-const labUnitContext = require.context(
-  '../packages/material-ui-lab/src/',
+const materialUnitContext = require.context(
+  '../packages/mui-material/src/',
   true,
   /\.test\.(js|ts|tsx)$/,
 );
+materialUnitContext.keys().forEach(materialUnitContext);
+
+const labUnitContext = require.context('../packages/mui-lab/src/', true, /\.test\.(js|ts|tsx)$/);
 labUnitContext.keys().forEach(labUnitContext);
 
 const styledEngineContext = require.context(
-  '../packages/material-ui-styled-engine/src/',
+  '../packages/mui-styled-engine/src/',
   true,
   /\.test\.(js|ts|tsx)$/,
 );
 styledEngineContext.keys().forEach(styledEngineContext);
 
 const styledEngineSCContext = require.context(
-  '../packages/material-ui-styled-engine-sc/src/',
+  '../packages/mui-styled-engine-sc/src/',
   true,
   /\.test\.(js|ts|tsx)$/,
 );
 styledEngineSCContext.keys().forEach(styledEngineSCContext);
 
-const systemContext = require.context(
-  '../packages/material-ui-system/src/',
-  true,
-  /\.test\.(js|ts|tsx)$/,
-);
+const systemContext = require.context('../packages/mui-system/src/', true, /\.test\.(js|ts|tsx)$/);
 systemContext.keys().forEach(systemContext);
 
-const unstyledContext = require.context(
-  '../packages/material-ui-unstyled/src/',
+const baseUnitContext = require.context('../packages/mui-base/src/', true, /\.test\.(js|ts|tsx)$/);
+baseUnitContext.keys().forEach(baseUnitContext);
+
+const utilsContext = require.context('../packages/mui-utils/src/', true, /\.test\.(js|ts|tsx)$/);
+utilsContext.keys().forEach(utilsContext);
+
+const materialNextContext = require.context(
+  '../packages/mui-material-next/src/',
   true,
   /\.test\.(js|ts|tsx)$/,
 );
-unstyledContext.keys().forEach(unstyledContext);
+materialNextContext.keys().forEach(materialNextContext);
+
+const joyContext = require.context('../packages/mui-joy/src', true, /\.test\.(js|ts|tsx)$/);
+joyContext.keys().forEach(joyContext);

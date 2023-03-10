@@ -2,21 +2,29 @@ const { JSDOM } = require('jsdom');
 
 // We can use jsdom-global at some point if maintaining these lists is a burden.
 const whitelist = [
+  // used by React's experimental cache API
+  // Always including it to reduce churn when switching between React builds
+  'AbortController',
   // required for fake getComputedStyle
   'CSSStyleDeclaration',
   'Element',
   'Event',
+  'TouchEvent',
   'Image',
   'HTMLElement',
   'HTMLInputElement',
   'Node',
   'Performance',
   'document',
+  'DocumentFragment',
 ];
 const blacklist = ['sessionStorage', 'localStorage'];
 
 function createDOM() {
-  const dom = new JSDOM('', { pretendToBeVisual: true });
+  const dom = new JSDOM('', {
+    pretendToBeVisual: true,
+    url: 'http://localhost',
+  });
   global.window = dom.window;
   // Not yet supported: https://github.com/jsdom/jsdom/issues/2152
   class Touch {
