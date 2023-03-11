@@ -9,7 +9,7 @@
 //   import styled, { css } from 'styled-components';
 // Inline style
 
-import { FunctionComponent, HTMLAttributes, useState } from 'react';
+import { ChangeEvent, FunctionComponent, HTMLAttributes, useState } from 'react';
 import clsx from 'clsx';
 
 const CLASS_NAME_ROOT = 'ComboBox';
@@ -32,24 +32,74 @@ function renderHighlightedText(text: string, subSting: string) {
   return replaceAll(text, subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`);
 }
 
-interface Props extends HTMLAttributes<HTMLInputElement> {
+type ListItems = string[];
+
+interface Props extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   value?: string; // Current input value
-  list?: string[]; // List of candidates to be be displayed in the DropDown list
+  list?: ListItems; // List of candidates to be be displayed in the DropDown list
+  onChange?: (newValue: string) => string; // More useful onChange() event with new value as string, user can override input by returning new value
 }
 
-const ComboBox: FunctionComponent<Props> = ({ className, list = [], value: propValue = '' }) => {
-  const [value, setValue] = useState(propValue); // Current input value
+const ComboBox: FunctionComponent<Props> = ({
+  className,
+  list: propList = [],
+  value: propValue = '',
+  onChange,
+}) => {
+  const [inputValue, setInputValue] = useState<string>(propValue); // Current input value
+  const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list items according to current input value
+  const [isDropDownVisible, setIsDropDownVisible] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<Number>(-1); // Index of currently selected item in the DropDown list
 
+  // Calls .onChange prop if set, also updates the content of DropDown list
+  function doChange(newValue: string) {
+    if (onChange) {
+      newValue = onChange(newValue); // Developer can override the input by returning new value
+    }
+    setInputValue(newValue);
+    updateDropDownList(newValue);
+  }
+
+  // Updates matched Suggestions and resets the list selection
+  function updateDropDownList(newValue: string) {
+    let newListItemsToShow;
+    if (!newValue) {
+      // Use all items from .list prop
+      newListItemsToShow = [...propList];
+    } else {
+      // Filter items from .list prop by new input value
+      const newValueLowerCase = newValue.toLowerCase();
+      newListItemsToShow = propList.filter((item) =>
+        item.toLowerCase().includes(newValueLowerCase),
+      );
+    }
+    setListItems(newListItemsToShow);
+    setSelectedIndex(-1); // Also reset selection
+  }
+
+  // Called when the User types a text
+  // Note: useCallback() is not required here we depends on the `value` state that changes on each key press
+  const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.currentTarget.value;
+    if (newValue !== inputValue) {
+      setIsDropDownVisible(true); // Something new were typed we need to show DropDown list again
+      doChange(newValue);
+    }
+  };
+
   // Renders content of DropDown list
-  function renderList() {
+  function renderDropDownList() {
+    if (listItems.length < 1) {
+      return null; // TODO: Do we need "hide" the list when there is no items to show?
+    }
+
     return (
       <ul className={`${CLASS_NAME_ROOT}-list`}>
-        {list.map((item, index) => (
+        {listItems.map((item, index) => (
           <li
             key={`item-${item}-${index}`}
             className={index === selectedIndex ? 'selected' : ''}
-            dangerouslySetInnerHTML={{ __html: renderHighlightedText(item, value) }}
+            dangerouslySetInnerHTML={{ __html: renderHighlightedText(item, inputValue) }}
             // onClick={onItemClick}
           />
         ))}
@@ -62,12 +112,12 @@ const ComboBox: FunctionComponent<Props> = ({ className, list = [], value: propV
       <input
         className={`${CLASS_NAME_ROOT}-input`}
         type="text"
-        value={value}
-        // onChange={onChange}
+        value={inputValue}
+        onChange={onInputChange}
         // onKeyDown={onKeyDown}
         // onBlur={onBlur}
       />
-      {renderList()}
+      {isDropDownVisible && renderDropDownList()}
     </div>
   );
 };
