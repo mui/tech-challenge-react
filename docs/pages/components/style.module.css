@@ -3,7 +3,7 @@
 }
 
 .selected {
-    background-color: gray;
+    background-color: lightgray;
     /* TODO: use HighlightText or system colors */
 }
 

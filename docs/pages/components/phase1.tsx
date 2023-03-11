@@ -18,7 +18,8 @@ export default function LandingPage() {
           First phase
         </Typography>
         <ComboBox list={countries.map(({ label }) => label)} />
-        <ComboBox list={countries.map(({ label }) => label)} />
+        &nbsp;
+        <ComboBox value="Uni" list={countries.map(({ label }) => label)} />
         <Typography variant="body3">
           <pre>{JSON.stringify(countries, null, 2)}</pre>
         </Typography>

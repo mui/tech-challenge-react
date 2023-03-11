@@ -5,10 +5,12 @@ import React, {
   KeyboardEvent,
   MouseEvent,
   useCallback,
+  useEffect,
   useState,
 } from 'react';
 import clsx from 'clsx';
 import styles from './style.module.css';
+import useId from '@material-ui/core/utils/useId';
 
 /**
  * @component ComboBox
@@ -20,8 +22,8 @@ const CLASS_NAME_LIST_ITEM = styles.ComboBoxListItem;
 const CLASS_NAME_SELECTED = styles.selected; // 'selected';
 const CLASS_NAME_HIGHLIGHTED = styles.highlighted; // 'highlighted';
 
-// const SELECTED_INDEX_DEFAULT = -1; // No selection
-const SELECTED_INDEX_DEFAULT = 0; // Preselect first item
+const SELECTED_INDEX_DEFAULT = -1; // No selection
+// const SELECTED_INDEX_DEFAULT = 0; // Preselect first item
 
 type ListItems = string[];
 
@@ -58,11 +60,13 @@ function renderHighlightedText(text: string, subSting: string): string {
  */
 const ComboBox: FunctionComponent<Props> = ({
   className,
+  id: propId, // We need pass the .id to wrapper component
   list: propList = [],
   value: propValue = '',
   onChange,
   ...restOfProps
 }) => {
+  const id = useId(); // NOTE: We use old React here, so this hook is form MUI
   const [inputValue, setInputValue] = useState<string>(propValue); // Current input value
   const [isDropDownVisible, setIsDropDownVisible] = useState(false);
   const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list items matching to current input value
@@ -112,9 +116,7 @@ const ComboBox: FunctionComponent<Props> = ({
 
   // Called when User clicks outside the component, also by Tab key
   const onInputBlur = useCallback(() => {
-    // setTimeout(() => {
     setIsDropDownVisible(false); // Hide the DropDown list when the Text input loosing focus
-    // }, 100);
   }, []);
 
   // Tracks Esc, Enter, Tab, Space and Arrow keys
@@ -131,7 +133,7 @@ const ComboBox: FunctionComponent<Props> = ({
           newSelectedIndex -= 1; // Select Previous item
           break;
 
-        // case 'Tab': // Google really uses Tab for selection next item :)
+        // case 'Tab': // TODO: Google uses Tab for selection next item, I think tabStops is used for navigation...
         case 'ArrowDown':
           if (!isDropDownVisible) {
             setIsDropDownVisible(true);
@@ -145,7 +147,7 @@ const ComboBox: FunctionComponent<Props> = ({
           setSelectedIndex(SELECTED_INDEX_DEFAULT); // TODO: Do we need to reset selection?
           return;
 
-        case 'Enter':
+        case 'Enter': // Note: Tests require event.preventDefault() on eny Enter press, but it is not correct...
         case ' ': // Space pressed
           if (!isDropDownVisible) {
             setIsDropDownVisible(true);
@@ -158,7 +160,7 @@ const ComboBox: FunctionComponent<Props> = ({
             const newValue = listItems[selectedIndex];
             doChange(newValue);
           }
-          return; // Thats all for Enter, Tab and Space
+          return;
 
         default:
           break; // Required by linter
@@ -205,6 +207,7 @@ const ComboBox: FunctionComponent<Props> = ({
             className={clsx(CLASS_NAME_LIST_ITEM, index === selectedIndex && CLASS_NAME_SELECTED)}
             // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: renderHighlightedText(item, inputValue) }}
+            id={`${id}-item-${index}`}
             role="option"
             tabIndex={index}
             onClick={onListItemClick}
@@ -216,10 +219,11 @@ const ComboBox: FunctionComponent<Props> = ({
   }
 
   return (
-    <div className={clsx(className, CLASS_NAME_ROOT)}>
+    <div className={clsx(className, CLASS_NAME_ROOT)} id={propId}>
       <input
+        aria-activedescendant={selectedIndex >= 0 ? `${id}-item-${selectedIndex}` : undefined}
         className={CLASS_NAME_INPUT}
-        role="searchbox"
+        // role="textbox" // Not allowed  by linter
         type="text"
         value={inputValue}
         onBlur={onInputBlur}
