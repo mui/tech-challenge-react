@@ -11,26 +11,30 @@
 
 import { ChangeEvent, FunctionComponent, HTMLAttributes, useCallback, useState } from 'react';
 import clsx from 'clsx';
+import styles from './style.module.css';
 
-const CLASS_NAME_ROOT = 'ComboBox';
-const CLASS_NAME_SELECTED = 'selected';
-const CLASS_NAME_HIGHLIGHTED = 'highlighted';
+const CLASS_NAME_ROOT = styles.ComboBox;
+const CLASS_NAME_INPUT = styles.ComboBoxInput;
+const CLASS_NAME_LIST = styles.ComboBoxList;
+const CLASS_NAME_LIST_ITEM = styles.ComboBoxListItem;
+const CLASS_NAME_SELECTED = styles.selected; // 'selected';
+const CLASS_NAME_HIGHLIGHTED = styles.highlighted; // 'highlighted';
 
-// TODO: Move to utils, use some library, or update target to support string.replaceAll()
-export function replaceAll(text: string, find: string, replace: string): string {
+// TODO: Use some library, or update target to support string.replaceAll()
+function renderHighlightedText(text: string, subSting: string): string {
+  // LOL, no .replaceAll() for current target + Node 16.x :)
+  // return text.replaceAll(subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`);
+
   let result;
   try {
-    result = text.replace(new RegExp(find, 'g'), replace);
+    result = text.replace(
+      new RegExp(subSting, 'g'),
+      `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`,
+    );
   } catch (error) {
     result = text; // For text with ~\./ symbols RegExp may generate the exception
   }
   return result;
-}
-// TODO: Move to utils, use some library, or update target to support string.replaceAll()
-function renderHighlightedText(text: string, subSting: string) {
-  // LOL, no .replaceAll() for current target + Node 16.x :)
-  // return text.replaceAll(subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`);
-  return replaceAll(text, subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`);
 }
 
 type ListItems = string[];
@@ -93,18 +97,22 @@ const ComboBox: FunctionComponent<Props> = ({
 
   // Renders content of DropDown list
   // TODO: Do we need memoizing here?
-  // TODO: Do we need separate Component for DropDown list? <DropDownList items={listItems} highlight={inputValue} />
+  // TODO: Do we need separate Component for DropDown list? <DropDownList items={listItems} highlight={inputValue}... />
   function renderDropDownList() {
     if (listItems.length < 1) {
       return null; // TODO: Do we need "hide" the list when there is no items to show?
     }
 
     return (
-      <ul className={`${CLASS_NAME_ROOT}-list`}>
+      <ul className={CLASS_NAME_LIST}>
         {listItems.map((item, index) => (
           <li
             key={`item-${item}-${index}`}
-            className={index === selectedIndex ? 'selected' : ''}
+            className={clsx(
+              CLASS_NAME_LIST_ITEM,
+              // index === selectedIndex ? CLASS_NAME_SELECTED : undefined,
+              index === selectedIndex && CLASS_NAME_SELECTED,
+            )}
             dangerouslySetInnerHTML={{ __html: renderHighlightedText(item, inputValue) }}
             // onClick={onItemClick}
           />
@@ -116,7 +124,7 @@ const ComboBox: FunctionComponent<Props> = ({
   return (
     <div className={clsx(className, CLASS_NAME_ROOT)}>
       <input
-        className={`${CLASS_NAME_ROOT}-input`}
+        className={CLASS_NAME_INPUT}
         type="text"
         value={inputValue}
         onChange={onInputChange}

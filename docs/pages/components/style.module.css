@@ -1,1 +1,51 @@
-/* In case you would like to use CSS modules */
+.highlighted {
+    font-weight: bold;
+}
+
+.selected {
+    background-color: gray;
+    /* TODO: use HighlightText or system colors */
+}
+
+.ComboBox {
+    padding: 0;
+    margin: 0;
+    min-width: 240px;
+
+    position: relative;
+    display: inline-block;
+    text-align: left;
+}
+
+.ComboBoxInput {
+    padding: 0.3rem;
+    min-width: 100%;
+    box-sizing: border-box;
+    font-size: inherit;
+}
+
+
+.ComboBoxList {
+    padding: 0.3rem;
+    margin: 0;
+    width: calc(100%
+            /* - 2px */
+        );
+    max-height: 50vh;
+    list-style: none;
+
+    position: absolute;
+    z-index: 999;
+    overflow-y: auto;
+
+    background: #eee;
+    border: 1px solid #888;
+    border-top: 0;
+
+    /* border-radius: 0.3rem; */
+    /* margin-top: 0.3rem; */
+}
+
+.ComboBoxListItem {
+    padding: 0.3rem;
+}
