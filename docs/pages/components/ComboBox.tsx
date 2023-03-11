@@ -60,7 +60,7 @@ function renderHighlightedText(text: string, subSting: string): string {
  */
 const ComboBox: FunctionComponent<Props> = ({
   className,
-  id: propId, // We need pass the .id to wrapper component
+  id: propId, // We need pass the .id prop to wrapper component
   list: propList = [],
   value: propValue = '',
   onChange,
@@ -173,10 +173,10 @@ const ComboBox: FunctionComponent<Props> = ({
 
       // Select new item in the DropDown list
       if (newSelectedIndex > listItems.length - 1) {
-        newSelectedIndex = 0; // Lopping to first item
+        newSelectedIndex = 0; // Looping to first item
       }
       if (newSelectedIndex < 0) {
-        newSelectedIndex = listItems.length - 1; // Lopping to last item
+        newSelectedIndex = listItems.length - 1; // Looping to last item
       }
       setSelectedIndex(newSelectedIndex);
       setIsDropDownVisible(true);
@@ -224,7 +224,7 @@ const ComboBox: FunctionComponent<Props> = ({
   }
 
   return (
-    <div className={clsx(className, CLASS_NAME_ROOT)} id={propId}>
+    <div className={clsx(CLASS_NAME_ROOT, className)} id={propId}>
       <input
         aria-activedescendant={selectedIndex >= 0 ? `${id}-item-${selectedIndex}` : undefined}
         className={CLASS_NAME_INPUT}
