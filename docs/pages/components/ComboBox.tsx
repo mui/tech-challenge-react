@@ -28,11 +28,12 @@ function renderHighlightedText(text: string, subSting: string): string {
   let result;
   try {
     result = text.replace(
-      new RegExp(subSting, 'g'),
+      // TODO: BUG: uNy -> uNited States, AM -> AMerican SAMoa
+      new RegExp(subSting, 'ig'),
       `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`,
     );
   } catch (error) {
-    result = text; // For text with ~\./ symbols RegExp may generate the exception
+    result = text; // RegExp may generate the exception
   }
   return result;
 }
@@ -40,20 +41,28 @@ function renderHighlightedText(text: string, subSting: string): string {
 type ListItems = string[];
 
 interface Props extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
-  value?: string; // Current input value
-  list?: ListItems; // List of candidates to be be displayed in the DropDown list
+  value?: string;
+  list?: ListItems;
   onChange?: (newValue: string) => string; // More useful event signature with new value as string, developer can override input by returning new value
 }
 
+/**
+ * Renders ComboBox component with DropDown list
+ * @component ComboBox
+ * @prop  {string} [value] - Initial Text input value
+ * @prop {string[]} [list] - List of candidates to be be displayed in the DropDown list
+ * @prop {function} [onChange] - Developer can override Input Changes by returning new value
+ */
 const ComboBox: FunctionComponent<Props> = ({
   className,
   list: propList = [],
   value: propValue = '',
   onChange,
+  ...restOfProps
 }) => {
   const [inputValue, setInputValue] = useState<string>(propValue); // Current input value
-  const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list items according to current input value
   const [isDropDownVisible, setIsDropDownVisible] = useState(false);
+  const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list items matching to current input value
   const [selectedIndex, setSelectedIndex] = useState<Number>(-1); // Index of currently selected item in the DropDown list
 
   // Calls .onChange prop if set, updates .value state, changes content of DropDown list
@@ -130,6 +139,7 @@ const ComboBox: FunctionComponent<Props> = ({
         onChange={onInputChange}
         // onKeyDown={onKeyDown}
         // onBlur={onBlur}
+        {...restOfProps} // All other HTMLInputElement props passed here
       />
       {isDropDownVisible && renderDropDownList()}
     </div>
