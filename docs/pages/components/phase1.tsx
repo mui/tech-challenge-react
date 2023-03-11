@@ -17,7 +17,7 @@ export default function LandingPage() {
         <Typography component="h1" variant="h2" sx={{ mt: 8 }}>
           First phase
         </Typography>
-        <ComboBox />
+        <ComboBox list={countries.map(({ label }) => label)} />
         <Typography variant="body3">
           <pre>{JSON.stringify(countries, null, 2)}</pre>
         </Typography>
