@@ -172,7 +172,7 @@ const ComboBox: FunctionComponent<Props> = ({
       }
 
       // Select new item in the DropDown list
-      if (newSelectedIndex > listItems.length - 1) {
+      if (newSelectedIndex >= listItems.length) {
         newSelectedIndex = 0; // Looping to first item
       }
       if (newSelectedIndex < 0) {
