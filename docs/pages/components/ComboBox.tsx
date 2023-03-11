@@ -9,7 +9,7 @@
 //   import styled, { css } from 'styled-components';
 // Inline style
 
-import { ChangeEvent, FunctionComponent, HTMLAttributes, useState } from 'react';
+import { ChangeEvent, FunctionComponent, HTMLAttributes, useCallback, useState } from 'react';
 import clsx from 'clsx';
 
 const CLASS_NAME_ROOT = 'ComboBox';
@@ -28,7 +28,8 @@ export function replaceAll(text: string, find: string, replace: string): string 
 }
 // TODO: Move to utils, use some library, or update target to support string.replaceAll()
 function renderHighlightedText(text: string, subSting: string) {
-  // return text.replaceAll(subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`); // LOL, no .replaceAll() for current target + Node 16.x
+  // LOL, no .replaceAll() for current target + Node 16.x :)
+  // return text.replaceAll(subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`);
   return replaceAll(text, subSting, `<span class="${CLASS_NAME_HIGHLIGHTED}">${subSting}</span>`);
 }
 
@@ -37,7 +38,7 @@ type ListItems = string[];
 interface Props extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
   value?: string; // Current input value
   list?: ListItems; // List of candidates to be be displayed in the DropDown list
-  onChange?: (newValue: string) => string; // More useful onChange() event with new value as string, user can override input by returning new value
+  onChange?: (newValue: string) => string; // More useful event signature with new value as string, developer can override input by returning new value
 }
 
 const ComboBox: FunctionComponent<Props> = ({
@@ -51,17 +52,20 @@ const ComboBox: FunctionComponent<Props> = ({
   const [isDropDownVisible, setIsDropDownVisible] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<Number>(-1); // Index of currently selected item in the DropDown list
 
-  // Calls .onChange prop if set, also updates the content of DropDown list
-  function doChange(newValue: string) {
-    if (onChange) {
-      newValue = onChange(newValue); // Developer can override the input by returning new value
-    }
-    setInputValue(newValue);
-    updateDropDownList(newValue);
-  }
+  // Calls .onChange prop if set, updates .value state, changes content of DropDown list
+  const doChange = useCallback(
+    (newValue: string) => {
+      if (onChange) {
+        newValue = onChange(newValue); // Developer can override the input by returning new value
+      }
+      setInputValue(newValue);
+      updateDropDownList(newValue);
+    },
+    [onChange],
+  );
 
-  // Updates matched Suggestions and resets the list selection
-  function updateDropDownList(newValue: string) {
+  // Updates content of DropDown list and resets the selection
+  const updateDropDownList = useCallback((newValue: string) => {
     let newListItemsToShow;
     if (!newValue) {
       // Use all items from .list prop
@@ -75,7 +79,7 @@ const ComboBox: FunctionComponent<Props> = ({
     }
     setListItems(newListItemsToShow);
     setSelectedIndex(-1); // Also reset selection
-  }
+  }, []);
 
   // Called when the User types a text
   // Note: useCallback() is not required here we depends on the `value` state that changes on each key press
@@ -88,6 +92,8 @@ const ComboBox: FunctionComponent<Props> = ({
   };
 
   // Renders content of DropDown list
+  // TODO: Do we need memoizing here?
+  // TODO: Do we need separate Component for DropDown list? <DropDownList items={listItems} highlight={inputValue} />
   function renderDropDownList() {
     if (listItems.length < 1) {
       return null; // TODO: Do we need "hide" the list when there is no items to show?
