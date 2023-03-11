@@ -9,8 +9,8 @@ import React, {
   useState,
 } from 'react';
 import clsx from 'clsx';
-import styles from './style.module.css';
 import useId from '@material-ui/core/utils/useId';
+import styles from './style.module.css';
 
 /**
  * @component ComboBox
@@ -67,12 +67,11 @@ const ComboBox: FunctionComponent<Props> = ({
   ...restOfProps
 }) => {
   const id = useId(); // NOTE: We use old React here, so this hook is form MUI
-  const [inputValue, setInputValue] = useState<string>(propValue); // Current input value
+  const [inputValue, setInputValue] = useState<string>(propValue);
   const [isDropDownVisible, setIsDropDownVisible] = useState(false);
-  const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list items matching to current input value
+  const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list of items matching to current input value
   const [selectedIndex, setSelectedIndex] = useState<number>(SELECTED_INDEX_DEFAULT); // Index of currently selected item in the DropDown list
 
-  // Updates content of DropDown list and resets the selection
   const updateDropDownList = useCallback(
     (newValue: string) => {
       let newListItemsToShow;
@@ -92,7 +91,13 @@ const ComboBox: FunctionComponent<Props> = ({
     [propList],
   );
 
-  // Calls .onChange prop if set, updates .value state, changes content of DropDown list
+  useEffect(
+    () => {
+      updateDropDownList(propValue); // The DropDown list must respect .value prop on component mounting
+    },
+    [], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
   const doChange = useCallback(
     (newValue: string) => {
       if (onChange) {
@@ -189,7 +194,7 @@ const ComboBox: FunctionComponent<Props> = ({
     }
   };
 
-  // Renders content of DropDown list
+  // Renders content of the DropDown list
   // TODO: Do we need memoizing here?
   // TODO: Do we need separate Component for DropDown list? <DropDownList items={listItems} highlight={inputValue}... />
   function renderDropDownList() {
@@ -223,7 +228,7 @@ const ComboBox: FunctionComponent<Props> = ({
       <input
         aria-activedescendant={selectedIndex >= 0 ? `${id}-item-${selectedIndex}` : undefined}
         className={CLASS_NAME_INPUT}
-        // role="textbox" // Not allowed  by linter
+        // role="textbox" // Not allowed by linter :)
         type="text"
         value={inputValue}
         onBlur={onInputBlur}
