@@ -1,24 +1,35 @@
-// You have multiple options to add styles:
-// emotion
-//   import styled from '@emotion/styled';
-// CSS modules
-//   import styles from './style.module.css'
-// JSS
-//   import { styled } from '@material-ui/styles';
-// styled-components
-//   import styled, { css } from 'styled-components';
-// Inline style
-
-import { ChangeEvent, FunctionComponent, HTMLAttributes, useCallback, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FunctionComponent,
+  HTMLAttributes,
+  KeyboardEvent,
+  MouseEvent,
+  useCallback,
+  useState,
+} from 'react';
 import clsx from 'clsx';
 import styles from './style.module.css';
 
+/**
+ * @component ComboBox
+ */
 const CLASS_NAME_ROOT = styles.ComboBox;
 const CLASS_NAME_INPUT = styles.ComboBoxInput;
 const CLASS_NAME_LIST = styles.ComboBoxList;
 const CLASS_NAME_LIST_ITEM = styles.ComboBoxListItem;
 const CLASS_NAME_SELECTED = styles.selected; // 'selected';
 const CLASS_NAME_HIGHLIGHTED = styles.highlighted; // 'highlighted';
+
+// const SELECTED_INDEX_DEFAULT = -1; // No selection
+const SELECTED_INDEX_DEFAULT = 0; // Preselect first item
+
+type ListItems = string[];
+
+interface Props extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
+  value?: string;
+  list?: ListItems;
+  onChange?: (newValue: string) => string; // More useful event signature with new value as string, developer can override input by returning new value
+}
 
 // TODO: Use some library, or update target to support string.replaceAll()
 function renderHighlightedText(text: string, subSting: string): string {
@@ -38,14 +49,6 @@ function renderHighlightedText(text: string, subSting: string): string {
   return result;
 }
 
-type ListItems = string[];
-
-interface Props extends Omit<HTMLAttributes<HTMLInputElement>, 'onChange'> {
-  value?: string;
-  list?: ListItems;
-  onChange?: (newValue: string) => string; // More useful event signature with new value as string, developer can override input by returning new value
-}
-
 /**
  * Renders ComboBox component with DropDown list
  * @component ComboBox
@@ -63,44 +66,124 @@ const ComboBox: FunctionComponent<Props> = ({
   const [inputValue, setInputValue] = useState<string>(propValue); // Current input value
   const [isDropDownVisible, setIsDropDownVisible] = useState(false);
   const [listItems, setListItems] = useState<ListItems>(propList); // Filtered list items matching to current input value
-  const [selectedIndex, setSelectedIndex] = useState<Number>(-1); // Index of currently selected item in the DropDown list
+  const [selectedIndex, setSelectedIndex] = useState<number>(SELECTED_INDEX_DEFAULT); // Index of currently selected item in the DropDown list
+
+  // Updates content of DropDown list and resets the selection
+  const updateDropDownList = useCallback(
+    (newValue: string) => {
+      let newListItemsToShow;
+      if (!newValue) {
+        // Use all items from .list prop
+        newListItemsToShow = [...propList];
+      } else {
+        // Filter items from .list prop by new input value
+        const newValueLowerCase = newValue.toLowerCase();
+        newListItemsToShow = propList.filter((item) =>
+          item.toLowerCase().includes(newValueLowerCase),
+        );
+      }
+      setListItems(newListItemsToShow);
+      setSelectedIndex(SELECTED_INDEX_DEFAULT); // Also reset selection
+    },
+    [propList],
+  );
 
   // Calls .onChange prop if set, updates .value state, changes content of DropDown list
   const doChange = useCallback(
     (newValue: string) => {
       if (onChange) {
-        newValue = onChange(newValue); // Developer can override the input by returning new value
+        newValue = onChange(newValue) ?? newValue; // Developer can override the input by returning new value
       }
       setInputValue(newValue);
       updateDropDownList(newValue);
     },
-    [onChange],
+    [onChange, updateDropDownList],
   );
 
-  // Updates content of DropDown list and resets the selection
-  const updateDropDownList = useCallback((newValue: string) => {
-    let newListItemsToShow;
-    if (!newValue) {
-      // Use all items from .list prop
-      newListItemsToShow = [...propList];
-    } else {
-      // Filter items from .list prop by new input value
-      const newValueLowerCase = newValue.toLowerCase();
-      newListItemsToShow = propList.filter((item) =>
-        item.toLowerCase().includes(newValueLowerCase),
-      );
-    }
-    setListItems(newListItemsToShow);
-    setSelectedIndex(-1); // Also reset selection
-  }, []);
-
   // Called when the User types a text
-  // Note: useCallback() is not required here we depends on the `value` state that changes on each key press
+  // Note: useCallback() is not required here we depends on the `inputValue` state that changes on each key press
   const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.currentTarget.value;
     if (newValue !== inputValue) {
-      setIsDropDownVisible(true); // Something new were typed we need to show DropDown list again
+      setIsDropDownVisible(true); // Something new were typed we need to show DropDown again
       doChange(newValue);
+    }
+  };
+
+  // Called when User clicks outside the component, also by Tab key
+  const onInputBlur = useCallback(() => {
+    // setTimeout(() => {
+    setIsDropDownVisible(false); // Hide the DropDown list when the Text input loosing focus
+    // }, 100);
+  }, []);
+
+  // Tracks Esc, Enter, Tab, Space and Arrow keys
+  const onInputKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLElement>) => {
+      let newSelectedIndex = selectedIndex;
+
+      switch (event.key) {
+        case 'ArrowUp':
+          if (!isDropDownVisible) {
+            setIsDropDownVisible(true);
+            return; // Only open DropDown on first press
+          }
+          newSelectedIndex -= 1; // Select Previous item
+          break;
+
+        // case 'Tab': // Google really uses Tab for selection next item :)
+        case 'ArrowDown':
+          if (!isDropDownVisible) {
+            setIsDropDownVisible(true);
+            return; // Only open DropDown on first press
+          }
+          newSelectedIndex += 1; // Select Next item
+          break;
+
+        case 'Escape':
+          setIsDropDownVisible(false);
+          setSelectedIndex(SELECTED_INDEX_DEFAULT); // TODO: Do we need to reset selection?
+          return;
+
+        case 'Enter':
+        case ' ': // Space pressed
+          if (!isDropDownVisible) {
+            setIsDropDownVisible(true);
+            return; // Only open DropDown on first press
+          }
+
+          if (selectedIndex >= 0 && selectedIndex < listItems.length) {
+            // Use currently selected Item as new value
+            event.preventDefault();
+            const newValue = listItems[selectedIndex];
+            doChange(newValue);
+          }
+          return; // Thats all for Enter, Tab and Space
+
+        default:
+          break; // Required by linter
+      }
+
+      // Select new item in the DropDown list
+      if (newSelectedIndex > listItems.length - 1) {
+        newSelectedIndex = 0; // Lopping to first item
+      }
+      if (newSelectedIndex < 0) {
+        newSelectedIndex = listItems.length - 1; // Lopping to last item
+      }
+      setSelectedIndex(newSelectedIndex);
+      setIsDropDownVisible(true);
+    },
+    [isDropDownVisible, listItems, selectedIndex, doChange],
+  );
+
+  // Called when the User clicks the Item in DropDown list
+  // Note: useCallback() is not required here we depends on the `inputValue` state that changes on each key press
+  const onListItemClick = (event: MouseEvent<HTMLElement>) => {
+    const newValue = event.currentTarget.innerText;
+    if (newValue !== inputValue) {
+      setInputValue(newValue);
+      setIsDropDownVisible(false);
     }
   };
 
@@ -113,20 +196,22 @@ const ComboBox: FunctionComponent<Props> = ({
     }
 
     return (
-      <ul className={CLASS_NAME_LIST}>
+      <div className={CLASS_NAME_LIST}>
         {listItems.map((item, index) => (
-          <li
+          <div
             key={`item-${item}-${index}`}
-            className={clsx(
-              CLASS_NAME_LIST_ITEM,
-              // index === selectedIndex ? CLASS_NAME_SELECTED : undefined,
-              index === selectedIndex && CLASS_NAME_SELECTED,
-            )}
+            aria-label={item}
+            aria-selected={index === selectedIndex}
+            className={clsx(CLASS_NAME_LIST_ITEM, index === selectedIndex && CLASS_NAME_SELECTED)}
+            // eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{ __html: renderHighlightedText(item, inputValue) }}
-            // onClick={onItemClick}
+            role="option"
+            tabIndex={index}
+            onClick={onListItemClick}
+            onKeyDown={onInputKeyDown} // Required by linter
           />
         ))}
-      </ul>
+      </div>
     );
   }
 
@@ -134,11 +219,12 @@ const ComboBox: FunctionComponent<Props> = ({
     <div className={clsx(className, CLASS_NAME_ROOT)}>
       <input
         className={CLASS_NAME_INPUT}
+        role="searchbox"
         type="text"
         value={inputValue}
+        onBlur={onInputBlur}
         onChange={onInputChange}
-        // onKeyDown={onKeyDown}
-        // onBlur={onBlur}
+        onKeyDown={onInputKeyDown}
         {...restOfProps} // All other HTMLInputElement props passed here
       />
       {isDropDownVisible && renderDropDownList()}
