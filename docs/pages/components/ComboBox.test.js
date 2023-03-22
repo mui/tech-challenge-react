@@ -26,7 +26,7 @@ describe('<ComboBox />', () => {
       </div>,
     );
 
-    const textbox = screen.getByRole('textbox');
+    const textbox = screen.getByRole('combobox');
 
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); // open the popup
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); // focus the first option
