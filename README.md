@@ -1,21 +1,22 @@
-# ⚛️ Technical challenge @ MUI
+# React technical challenge @ MUI
 
 This challenge is part of the hiring process at MUI for some of the Software Engineer positions.
 The idea is to make as much progress as possible under a given time constraint (3-4 hours).
 
 ## Why are we doing this?
 
-At MUI, because we are a DevTools company, you'll make product decisions. You will flesh out product requirements and turn them into a technical design and implementation.
+At MUI, because we are a DevTools company, you'll make product decisions.
+You will flesh out product requirements and turn them into a technical design and implementation.
 This challenge simulates that, we will review the product decisions you make, the quality of the code, as well as how you approach diving into a complex codebase.
 We want to get a glimpse of how you will perform in the role.
 
 ## Context about MUI
 
-The short-term objective of MUI is to become the UI toolkit for React.
-We are unifying the fragmented ecosystem of dependencies into a single set of simple, beautiful, consistent, and accessible React components.
+MUI's objective is to become the UI toolkit for React developers.
+We're unifying the fragmented ecosystem of dependencies into a single set of simple, beautiful, consistent, and accessible React components.
 
-The long-term objective of MUI is to make building great React UIs and web applications quicker, simpler, and accessible to more people through a low-code platform.
-It's about writing less code, e.g. https://youtu.be/GnO7D5UaDig?t=2451.
+Our mission is, ultimately, to make building great UIs and web apps a breeze ⎯ quicker, simpler, and accessible to more people.
+At the end of the day, it's about [_writing less code_](https://youtu.be/GnO7D5UaDig?t=2451).
 
 Head to [our Handbook](https://mui-org.notion.site/Why-MUI-d8b8c142a6a44e3aa963f26edf4e03db) to learn more.
 
@@ -63,11 +64,11 @@ In practice, such a solution would require dozens of hours to reach the high-qua
 
 ### Work environment
 
-To save your time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc.
+To save you time, a working environment was created with Next.js/TypeScript/eslint/prettier/testing-library/Babel, etc.
 It's a reproduction of the [mui/material-ui](https://github.com/mui/material-ui) repository.
-You can install this environment following these steps:
+You can install this environment by following these steps:
 
-- clone the repo: `git clone git@github.com:mui/react-technical-challenge.git`
+- clone the repo: `git clone git@github.com:mui/tech-challenge-react.git`
 - install the dependencies: `yarn`
 - use a Node.js's version <= 16 and >= 10
 - start Next.js: `yarn start`
@@ -86,7 +87,7 @@ The tests in the file can be run with this command: `yarn t ComboBox`.
 
 Congratulations, you have completed the first implementation of the component in the first phase. Now, it's time to push it to production!
 
-Fast forward months and hours of iteration on the component, you might reach a state close to same [Combo Box](http://0.0.0.0:3002/components/autocomplete/) component that we were running in production around January 2021.
+Fast forward months and hours of iteration on the component, you might reach a state close to the same [Combo Box](http://0.0.0.0:3002/components/autocomplete/) component that we were running in production around January 2021.
 
 This second phase is about handling a fake GitHub issue a developer has just opened.
 
@@ -129,8 +130,12 @@ The goal of this second phase is to improve the component from v5.0.0-alpha.15 a
 
 ## Submission
 
-**DO NOT** host your project on a public repository.
-Please send us a zip file containing this project using the upload link that we have provided by email (**with** the _.git_ folder).
-To significantly reduce the size of the archive, you can remove the `/_node_modules_/` and `/docs/.next/` folders.
-If you don't have the upload link, you can simply send it to job@mui.com.
-Thanks!
+Instructions:
+
+- **DO NOT** fork / host your project on a public repository.
+- Please send us a zip file containing this project using the upload link that we have provided by email (**with** the _.git_ folder).
+- To significantly reduce the size of the archive, you can remove the `/_node_modules_/` and `/docs/.next/` folders.
+- If you don't have the upload link, you can simply send it to job@mui.com.
+
+We're excited and looking forward to seeing what you'll create!
+Good luck 🚀
