@@ -1,6 +1,6 @@
 # React technical challenge @ MUI
 
-This challenge is part of the hiring process at MUI for some of the Software Engineer positions.
+This challenge is part of the hiring process for some of the Software Engineer positions at MUI.
 The idea is to make as much progress as possible under a given time constraint (3-4 hours).
 
 ## Why are we doing this?
