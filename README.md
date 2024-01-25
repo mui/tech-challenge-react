@@ -70,7 +70,7 @@ You can install this environment by following these steps:
 
 - clone the repo: `git clone git@github.com:mui/tech-challenge-react.git`
 - install the dependencies: `yarn`
-- use a Node.js's version <= 16 and >= 10
+- use a Node.js's version >= 18.0.0 and < 21.0.0
 - start Next.js: `yarn start`
 - open http://0.0.0.0:3002/components/phase1/
 
