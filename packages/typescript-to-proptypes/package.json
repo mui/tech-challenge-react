@@ -28,6 +28,5 @@
   "devDependencies": {
     "@types/doctrine": "^0.0.3"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
