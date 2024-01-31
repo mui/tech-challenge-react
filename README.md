@@ -95,21 +95,17 @@ This second phase is about handling a fake GitHub issue a developer has just ope
 
 _Developers rarely spend the time to explain the pain point they face in detail nor provide context. Lucky for us, we got a reproduction we can leverage:_
 
----
-
-Hi, I'm facing problem, please help.
-
-#### Steps to reproduce 🕹
-
-1. Open https://codesandbox.io/s/recursing-mclean-2dub0?file=/demo.tsx
-2. Type <kbd>1</kbd> in the textbox. Once the options are loaded, the component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
-3. Then type <kbd>2</kbd> in the textbox. The textbox now contains `12`. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
-
-#### Environment
-
-`@material-ui/core@5.0.0-alpha.15`
-
----
+> Hi, I'm facing problem, please help.
+>
+> #### Steps to reproduce 🕹
+>
+> 1. Open https://codesandbox.io/s/recursing-mclean-2dub0?file=/demo.tsx
+> 2. Type <kbd>1</kbd> in the textbox. Once the options are loaded, the component displays options filtered by input value. The callback `onHighlightChange` log correct value `option 1 1`.
+> 3. Then type <kbd>2</kbd> in the textbox. The textbox now contains `12`. The component displays options filtered by input value. The callback `onHighlightChange` log wrong value `option 1 1` instead of `option 2 12`.
+>
+> #### Environment
+>
+> `@material-ui/core@5.0.0-alpha.15`
 
 ### Guidance
 
