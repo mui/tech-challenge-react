@@ -130,7 +130,7 @@ Instructions:
 
 - **DO NOT** fork / host your project on a public repository.
 - Please send us a zip file containing this project using the upload link that we have provided by email (**with** the _.git_ folder).
-- To significantly reduce the size of the archive, you can remove the `/_node_modules_/` and `/docs/.next/` folders.
+- To significantly reduce the size of the archive, remove the `/_node_modules_/` and `/docs/.next/` folders.
 - If you don't have the upload link, you can send it to job@mui.com.
 
 We're excited and looking forward to seeing what you'll create!
