@@ -20,7 +20,7 @@ At the end of the day, it's about [_writing less code_](https://youtu.be/GnO7D5U
 
 Head to [our Handbook](https://mui-org.notion.site/Why-MUI-d8b8c142a6a44e3aa963f26edf4e03db) to learn more.
 
-## Summary
+## The challenge
 
 Your challenge is split into two phases:
 
@@ -54,7 +54,7 @@ The goal of this first phase is to implement the above component:
 
 In practice, such a solution would require dozens of hours to reach the high-quality bar we expect MUI components to have (if not > 100 hours). To keep the challenge short, we will focus on solving a subset of the problem:
 
-- you may drop behaviors that have a too high time opportunity cost. Please **document the behaviors your drop and why**.
+- you may drop behaviors that have a too high time opportunity cost. Please **document the behaviors you drop and why**.
 - don't write documentation but enough to see how to use the component, e.g. one demo.
 - only one browser support (of your choice)
 - no touch screen support
@@ -93,7 +93,7 @@ This second phase is about handling a fake GitHub issue a developer has just ope
 
 ### Issue
 
-_Developers rarely spend the time to explain the pain point they face in detail nor provide context. Lucky for us, we got a reproduction we can leverage:_
+_Developers rarely spend the time to explain the pain point they face in detail nor provide context. Lucky for us, we received a reproduction we can leverage:_
 
 > Hi, I'm facing problem, please help.
 >
@@ -130,8 +130,8 @@ Instructions:
 
 - **DO NOT** fork / host your project on a public repository.
 - Please send us a zip file containing this project using the upload link that we have provided by email (**with** the _.git_ folder).
-- To significantly reduce the size of the archive, you can remove the `/_node_modules_/` and `/docs/.next/` folders.
-- If you don't have the upload link, you can simply send it to job@mui.com.
+- To significantly reduce the size of the archive, remove the `/_node_modules_/` and `/docs/.next/` folders.
+- If you don't have the upload link, you can send it to job@mui.com.
 
 We're excited and looking forward to seeing what you'll create!
 Good luck 🚀
