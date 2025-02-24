@@ -35,7 +35,10 @@ Your challenge is split into two phases:
 
 A Combo Box is a component that combines a _text box_ with a _dropdown list_, allowing the users to choose among a long list of mutually exclusive values. For instance, Chrome's URL bar:
 
-<img src="/combo-box.png" width="100%" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/combo-box-dark.png">
+  <img alt="" src="/combo-box.png" height="100%">
+</picture>
 
 ### Objective
 
